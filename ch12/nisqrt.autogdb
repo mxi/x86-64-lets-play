@@ -1,0 +1,15 @@
+set prompt
+set pagination off
+set logging overwrite on
+set logging redirect on
+set logging on
+file nisqrt
+break nisqrt.asm:110
+run
+echo ---\n
+x/101dg &NumArr
+echo ---\n
+x/101dg &SqrtArr
+echo ---\n
+continue
+quit
