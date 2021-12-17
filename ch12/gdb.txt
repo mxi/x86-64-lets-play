@@ -1,69 +1,18 @@
-Reading symbols from stoid...
-Breakpoint 1 at 0x4010e5: file stoid.asm, line 126.
-Breakpoint 2 at 0x401101: file stoid.asm, line 127.
-Breakpoint 3 at 0x40111d: file stoid.asm, line 128.
-Breakpoint 4 at 0x401139: file stoid.asm, line 129.
-Breakpoint 5 at 0x401155: file stoid.asm, line 130.
-Breakpoint 6 at 0x401171: file stoid.asm, line 131.
-Breakpoint 7 at 0x40118d: file stoid.asm, line 132.
-Breakpoint 8 at 0x4011a9: file stoid.asm, line 135.
-Starting program: /home/maxim/code/x86/learn/ch12/stoid 
+Reading symbols from itosd...
+Breakpoint 1 at 0x4011b9: file itosd.asm, line 119.
+Starting program: /home/maxim/code/x86/learn/ch12/itosd 
 
-Breakpoint 1, _start () at stoid.asm:126
-126		call_stoid Num2, Str2,  4, 0
-===
-0x402030:	42
-$1 = 0 '\000'
-Continuing.
-
-Breakpoint 2, _start () at stoid.asm:127
-127		call_stoid Num3, Str3,  6, 0
+Breakpoint 1, _start () at itosd.asm:119
+119		mov rax, 60
 ---
-0x402038:	-67
-$2 = 0 '\000'
-Continuing.
-
-Breakpoint 3, _start () at stoid.asm:128
-128		call_stoid Num4, Str4, 11, ","
+Str1: '-22938'
+Str2: '84935'
+Str3: ''
+Str4: ''
+Str5: '222'
+Str6: '12345'
+Str7: '54321,'
+Str8: '19283!'
 ---
-0x402040:	-86
-$3 = 0 '\000'
 Continuing.
-
-Breakpoint 4, _start () at stoid.asm:129
-129		call_stoid Num5, Str5,  0, 0
----
-0x402048:	129
-$4 = 44 ','
-Continuing.
-
-Breakpoint 5, _start () at stoid.asm:130
-130		call_stoid Num6, Str6,  3, ","
----
-0x402050:	0
-Cannot access memory at address 0x0
-Continuing.
-
-Breakpoint 6, _start () at stoid.asm:131
-131		call_stoid Num7, Str7,  9, 0
----
-0x402058:	1
-$5 = 44 ','
-Continuing.
-
-Breakpoint 7, _start () at stoid.asm:132
-132		call_stoid Num8, Str8,  5, 0
----
-0x402060:	0
-Cannot access memory at address 0x0
-Continuing.
-
-Breakpoint 8, _start () at stoid.asm:135
-135		mov rax, 60
----
-0x402068:	0
-Cannot access memory at address 0x0
-Continuing.
-[Inferior 1 (process 52874) exited normally]
-===
-The program is not being run.
+[Inferior 1 (process 90690) exited normally]

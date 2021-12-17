@@ -1,0 +1,20 @@
+set prompt
+set pagination off
+set logging overwrite on
+set logging redirect on
+set logging on
+file itosd
+break itosd.asm:119
+run
+echo ---\n
+printf "Str1: '%s'\n", &Str1
+printf "Str2: '%s'\n", &Str2
+printf "Str3: '%s'\n", &Str3
+printf "Str4: '%s'\n", &Str4
+printf "Str5: '%s'\n", &Str5
+printf "Str6: '%s'\n", &Str6
+printf "Str7: '%s'\n", &Str7
+printf "Str8: '%s'\n", &Str8
+echo ---\n
+continue
+quit
