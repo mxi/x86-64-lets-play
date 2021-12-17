@@ -17,6 +17,12 @@ section .data
 	Str7 db " garbage ", 0
 	Str8 db 1, 2, 3, 4, 5, 0
 
+	Str9 db "-82,  47,  44,  93,"
+	     db "-65, -15,  45, -75,"
+	     db " 52,  57, -30,  22,"
+	     db " 98,  38, -58, -76,", 0
+
+
 section .bss
 	Num1 resq 1
 	Num2 resq 1
@@ -26,6 +32,8 @@ section .bss
 	Num6 resq 1
 	Num7 resq 1
 	Num8 resq 1
+
+	NumArr9 resq 16
 
 section .text
 global stoid
@@ -121,17 +129,29 @@ stoid_end:
 	pop rbx
 ret
 
-_start:
-	call_stoid Num1, Str1,  3, 0
-	call_stoid Num2, Str2,  4, 0
-	call_stoid Num3, Str3,  6, 0
-	call_stoid Num4, Str4, 11, ","
-	call_stoid Num5, Str5,  0, 0
-	call_stoid Num6, Str6,  3, ","
-	call_stoid Num7, Str7,  9, 0
-	call_stoid Num8, Str8,  5, 0
-
-	; exit
-	mov rax, 60
-	mov rdi, 0
-	syscall
+; _start:
+; 	call_stoid Num1, Str1,  3, 0
+; 	call_stoid Num2, Str2,  4, 0
+; 	call_stoid Num3, Str3,  6, 0
+; 	call_stoid Num4, Str4, 11, ","
+; 	call_stoid Num5, Str5,  0, 0
+; 	call_stoid Num6, Str6,  3, ","
+; 	call_stoid Num7, Str7,  9, 0
+; 	call_stoid Num8, Str8,  5, 0
+; 
+; 	; parse array
+; 	mov rax, Str9
+; 	mov rbx, NumArr9
+; _start_parse_array_loop:
+; 	cmp BYTE [rax], 0
+; 	jz _start_parse_array_loop_end
+; 	call_stoid rbx, rax, 4, ","
+; 	add rbx, 8
+; 	inc rax ; skip delimiter
+; 	jmp _start_parse_array_loop
+; _start_parse_array_loop_end:
+; 
+; 	; exit
+; 	mov rax, 60
+; 	mov rdi, 0
+; 	syscall
