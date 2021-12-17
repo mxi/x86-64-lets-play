@@ -1,0 +1,11 @@
+(gdb) Reading symbols from sqofsum...
+Breakpoint 1 at 0x40102f: file sqofsum.asm, line 30.
+Starting program: /home/maxim/code/x86/learn/ch7/sqofsum 
+
+Breakpoint 1, sum_loop () at sqofsum.asm:30
+30		mov rax, 60
+---
+SqSum = 3025
+---
+Continuing.
+[Inferior 1 (process 33433) exited normally]

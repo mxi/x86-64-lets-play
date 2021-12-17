@@ -1,0 +1,18 @@
+set pagination off
+set logging redirect on
+set logging overwrite on
+set logging on
+set prompt
+file reverse
+break reverse.asm:20
+break reverse.asm:38
+run
+echo ---\n
+echo Before:\n
+x/50dw &Arr
+continue
+echo After:\n
+x/50dw &Arr
+echo ---\n
+continue
+quit

@@ -1,0 +1,50 @@
+set pagination off
+set prompt
+set logging overwrite on
+set logging redirect on
+set logging on
+file stoid
+break stoid.asm:126
+break stoid.asm:127
+break stoid.asm:128
+break stoid.asm:129
+break stoid.asm:130
+break stoid.asm:131
+break stoid.asm:132
+break stoid.asm:135
+run
+echo ===\n
+x/dg &Num1
+print *(char*)$rax
+continue
+echo ---\n
+x/dg &Num2
+print *(char*)$rax
+continue
+echo ---\n
+x/dg &Num3
+print *(char*)$rax
+continue
+echo ---\n
+x/dg &Num4
+print *(char*)$rax
+continue
+echo ---\n
+x/dg &Num5
+print *(char*)$rax
+continue
+echo ---\n
+x/dg &Num6
+print *(char*)$rax
+continue
+echo ---\n
+x/dg &Num7
+print *(char*)$rax
+continue
+echo ---\n
+x/dg &Num8
+print *(char*)$rax
+continue
+echo ===\n
+continue
+quit

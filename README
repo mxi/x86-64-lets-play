@@ -1,0 +1,13 @@
+This repository contaians my personal solutions to some exercise
+quizzes and problems from "x86-64 Assembly Language Programming with 
+Ubuntu (January 2020)" by Ed Jorgensen.
+
+I added or changed some "suggested projects" to suit my own interests
+but still kept the spirit of conceptual understanding within those
+changes.
+
+Even though the text is titled "with Ubuntu," I was able to use Arch 
+Linux just fine.
+
+I believe this text is freely available at 
+http://www.egr.unlv.edu/~ed/assembly64.pdf

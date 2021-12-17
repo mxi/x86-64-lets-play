@@ -1,0 +1,52 @@
+1)	ddd <exe> or
+	gdb <exe>
+
+2)	yasm -g dwarf2
+	ld -g
+
+3)	starts program loaded in the debugger until it
+	reaches a breakpoint.
+
+4)	Resumes the execution of the program in the debugger
+	until another breakbpoint.
+
+5)	gdb: info registers,
+	     info all-registers
+
+6)	second = hex value,
+	third = decimal unsigned value
+
+7)	type "quit" command
+	[x] type "exit" command
+
+8)	break <symbol> or
+	break <address>
+	[x] break <line-number>
+
+9)	source <file-name>
+
+10)	next instruction to be executed.
+
+11)	x/db &bVar1
+	x/dh &wVar1
+	x/dw &dVar1
+	x/dg &qVar1
+	x/30db &bArr1
+	x/50dh &wArr1
+	x/75dw &dArr1
+
+12)	x/xb &bVar1
+	x/xh &wVar1
+	x/xw &dVar1
+	x/xg &qVar1
+	x/30xb &bArr1
+	x/50xh &wArr1
+	x/75xw &dArr1
+
+13)	x/xg $rsp
+	[x] x/ug $rsp
+
+14)	x/5xg $rsp
+	[x] x/5ug $rsp
+
+

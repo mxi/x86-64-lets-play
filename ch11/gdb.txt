@@ -1,0 +1,15 @@
+Reading symbols from itos...
+Breakpoint 1 at 0x401212: file itos.asm, line 64.
+Starting program: /home/maxim/code/x86/learn/ch11/itos 
+
+Breakpoint 1, @8.pop_loop () at itos.asm:64
+64		mov rax, 60
+---
+0x402028:	"-28291946"
+0x402048:	"401984161"
+0x402068:	"73236900"
+0x402088:	"-492079933"
+0x4020a8:	"199821803"
+---
+Continuing.
+[Inferior 1 (process 112954) exited normally]

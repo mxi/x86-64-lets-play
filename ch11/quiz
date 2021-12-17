@@ -1,0 +1,15 @@
+1)	Above the .data, .bss, .text section
+
+2)	As many times as requested.
+
+3)	So that for each macro invocation, the label name is unique
+	to that macro to avoid assemble-time errors.
+
+4)	Two macro invocations will cause an assemble-time error by
+	defining two conflicting labels.
+
+5)	It is legal provided that the label is only defined once.
+
+6)	Assemble-time, @%x where x is param for %define, and 
+	@%n where n is the parameter index starting at 1 in
+	%macro \ %endmacro

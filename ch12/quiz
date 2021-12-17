@@ -1,0 +1,61 @@
+1)	[x] 1. Prologue (save required state);
+	[x] 2. Epilogue (restore required state).
+
+	[x] 1. Linkage (where to jump to); [where to return jump
+	       to and where to return after the call.]
+	2. Argument transmission (parameters).
+
+2)	1. call <address/label>
+	2. ret
+
+3)	call-by-value
+4)	call-by-reference
+
+5)	Once
+
+6)	1. Push $rip onto the stack;
+	2. Jump to the requested address.
+
+7)	To save/restore required registers (rbx, r12, r13, r14, r15
+	rbp), and to allocate and deallocate local variables by
+	adjusting $rsp. [preserved registers]
+
+8)	%1 at $rdi
+	%2 at $rsi
+	%3 at $rdx
+	%4 at $rcx
+	%5 at $r8
+	%6 at $r9
+
+9)	%1 at $edi
+	%2 at $esi
+	%3 at $edx
+	%4 at $ecx
+	%5 at $r8d
+	%6 at $r9d
+
+10)	It need not be saved/restored by the callee.
+
+11)	$r10, $r11 [rax, rcx, rdx, rsi, rdi, r8, r9 also
+	temporaries.]
+
+12)	Activation record; call frame
+
+13)	It does not call any other functions inside itself.
+
+14)	To wash out any arguments passed on the stack by the caller.
+
+15)	24 (3*4)
+
+16)	%7 = $rbp+16
+
+17)	Generally none, for recursive calls: the stack size limit.
+
+18)	call-by-reference
+
+19)	%7 = $rbp+16
+	%8 = $rbp+24
+
+20)	They are local to the function and don't interfere with global
+	state (bad practice.) [when functions are not executed, they
+	do not use memory.]

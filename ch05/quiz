@@ -1,0 +1,34 @@
+1)	Assembly language is human readable code,
+	machine language is CPU readable code.
+
+2)	1. Create symbol table,
+	2. Assign addresses to each statement,
+	3. [x] Macro expansion
+
+3)	1. Final code generation,
+	2. Create optiona list file,
+	3. Create object file.
+
+4)	Takes in multiple object files and ensures external
+	references among the object files are resolved into
+	valid addresses in the final executable.
+
+	Object files may reference routines or variables
+	through relocatable addresses which are changed by
+	the linker.
+
+5)	Read a valid executable into memory and mark the
+	code ready to run for the OS scheduler.
+
+6)	  BUFF equ 1024
+	  ...
+	> mov rax, BUFF+5
+
+7)	Assemble: .asm -> .o
+	Link: *.o -> elf
+	Load: elf -> run
+
+8)	During runtime.
+
+9)	The name of a variable or routine and its address in
+	the object file.

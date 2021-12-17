@@ -1,0 +1,18 @@
+set pagination off
+set logging redirect on
+set logging overwrite on
+set logging on
+set prompt
+file bubsort
+break bubsort.asm:31
+break bubsort.asm:67
+run
+echo ---\n
+echo Given Array\n
+x/50dw &Arr
+continue
+echo Sorted Array\n
+x/50dw &Arr
+echo ---\n
+continue
+quit

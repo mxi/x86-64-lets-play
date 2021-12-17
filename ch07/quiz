@@ -1,0 +1,73 @@
+1)	1. legal
+	2. legal
+	3. illegal - immediate out of range of register size
+	4. legal
+	5. illegal - mov operands must be the same size
+	6. illegal - dest cannot be immediate
+	7. legal
+	8. legal
+	9. legal (no type hint necessary)
+	10. legal (moves address rather than value)
+	11. legal
+	12. illegal - cannot both be memory
+	13. illegal - cannot both be memory
+	14. legal
+	[x] 15. legal [illegal - r16 doesn't exist]
+	16. legal
+
+2)	1. zero-extends to the 56 upper bits of RSI while
+	   copying the value of bVar1 into the first 8-bits.
+	2. sign-extends to the 56 upper bits of RSI while
+	   copying the value of bVar1 into the first 8-bits.
+	   (if 8th bit is 1, the 56 others ones will be 1)
+
+3)	1. mov ah, 0 / movzx ax, al
+	2. movsz ax, al [cbw]
+
+4)	1. movzx eax, ax
+	2. cwde / movesx eax, ax
+
+5)	1. mov dx, 0
+	2. cwd
+
+6)	cwd converts signed ax into dx:ax, movsx is more general, 
+	able to convert most sources into sign extended 
+	destinations as long as sizeof(dest) > sizeof(src).
+
+7)	1. The assembler doesn't know the intended size of 1 
+	   in the source operand.
+	2. The assembler can guess a 32-bit type.
+
+8)	rax = 0x00 00 00 00 00 00 00 09
+	rbx = 0x00 00 00 00 00 00 00 0B
+
+9)	rax = 0x00 00 00 00 00 00 00 07
+	rbx = 0x00 00 00 00 00 00 00 02
+
+10)	rax = 0x00 00 00 00 00 00 00 09
+	rbx = 0xff ff ff ff ff ff ff f9
+
+11)	rax = 0x00 00 00 00 00 00 00 0C
+	rdx = 0x00 00 00 00 00 00 00 00
+
+12)	rax = 0x00 00 00 00 00 00 00 01
+	rdx = 0x00 00 00 00 00 00 00 02
+
+13)	rax = 0x00 00 00 00 00 00 00 02
+	rdx = 0x00 00 00 00 00 00 00 03
+
+14)	1. dest cannot be an immediate.
+	2. div/mul/idiv/imul do not accept immediate with 1 operand.
+	3. cannot move memory to memory (need 2 instructions)
+	[x] 4. cannot dereference a register [64 bits required for
+	   address but ax is 16 bits]
+
+15)	if there is garbage in edx, idiv will pick it up and produce
+	a garbage result (cdq instruction required)
+
+16)	unsigned division instruction with signed values.
+
+17)	upper 16-bits of eax do not contain anything related to the
+	idiv instruction, it must be ax alone.
+
+18)	[i]mul <dest:var|reg>, <src1:var|reg>, <src2:imm>

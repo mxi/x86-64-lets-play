@@ -1,0 +1,37 @@
+1)	1. Moves the 64-bit value at the address of qVar1
+	   into rdx;
+	2. Moves the address of qVar1 into rdx.
+
+2)	1. immediate
+	2. memory
+	3. immediate
+	4. illegal
+	[x] 5. illegal [register] OK
+	6. memory
+	7. memory
+	8. illegal
+
+3)	eax = 0x00 00 00 0A
+
+4)	eax = 0x00 00 00 03
+	edx = 0x00 00 00 02
+
+5)	eax = 0x00 00 00 09
+	ebx = 0x00 00 00 02
+	rcx = 0x00 00 00 00 00 00 00 00
+	rsi = 0x00 00 00 00 00 00 00 0C
+
+6)	[x] eax = 0x00 00 00 08 [0x00 00 00 10] OK 8*2 = 16, wrong RSI
+	edx = 0x00 00 00 00
+	rcx = 0x00 00 00 00 00 00 00 00
+	rsi = 0x00 00 00 00 00 00 00 04
+
+7)	eax = 0x00 00 00 02
+	edx = 0x00 00 00 05
+	rcx = 0x00 00 00 00 00 00 00 00
+	rsi = 0x00 00 00 00 00 00 00 03
+
+8)	eax = 0x00 00 00 18
+	edx = 0x00 00 00 00
+	rcx = 0x00 00 00 00 00 00 00 00
+	rsi = 0x00 00 00 00 00 00 00 05

@@ -1,0 +1,30 @@
+set logging file 
+set logging overwrite on
+set logging redirect on
+set logging on
+set prompt
+file 1
+break 1.asm:99
+run
+echo ---\n
+echo Additions:\n
+printf "bAns1 = %u = 0x%x\n", (char)bAns1, (char)bAns1
+printf "bAns2 = %u = 0x%x\n", (char)bAns2, (char)bAns2
+printf "bAns3 = %u = 0x%x\n", (char)bAns3, (char)bAns3
+echo Subtractions:\n
+printf "bAns6 = %u = 0x%x\n", (char)bAns6, (char)bAns6
+printf "bAns7 = %u = 0x%x\n", (char)bAns7, (char)bAns7
+printf "bAns8 = %u = 0x%x\n", (char)bAns8, (char)bAns8
+echo Multiplications:\n
+printf "wAns11 = %u = 0x%x\n", (short)wAns11, (short)wAns11
+printf "wAns12 = %u = 0x%x\n", (short)wAns12, (short)wAns12
+printf "wAns13 = %u = 0x%x\n", (short)wAns13, (short)wAns13
+echo Divisions:\n
+printf "bAns16 = %u = 0x%x\n", (char)bAns16, (char)bAns16
+printf "bAns17 = %u = 0x%x\n", (char)bAns17, (char)bAns17
+printf "bAns18 = %u = 0x%x\n", (char)bAns18, (char)bAns18
+echo Remainders:\n
+printf "bRem18 = %u = 0x%x\n", (char)bRem18, (char)bRem18
+echo ---\n
+continue
+quit

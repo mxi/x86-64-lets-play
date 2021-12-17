@@ -1,0 +1,17 @@
+file a.out
+set logging overwrite on
+set logging redirect
+set logging on
+b prog.asm:37
+b prog.asm:42
+b prog.asm:47
+b prog.asm:52
+r
+print $al
+c
+print $ax
+c
+print $eax
+c
+print $rax
+quit

@@ -1,0 +1,30 @@
+(gdb) Breakpoint 1 at 0x401015: file prog.asm, line 37.
+(gdb) Breakpoint 2 at 0x40102d: file prog.asm, line 42.
+(gdb) Breakpoint 3 at 0x401042: file prog.asm, line 47.
+(gdb) Breakpoint 4 at 0x40105a: file prog.asm, line 52.
+(gdb) Starting program: /home/maxim/code/x86/learn/ch6/a.out 
+
+Breakpoint 1, _start () at prog.asm:37
+warning: Source file is more recent than executable.
+37		mov ax, WORD [wVar1]
+(gdb) $1 = 26
+(gdb) Continuing.
+
+Breakpoint 2, _start () at prog.asm:42
+42		mov eax, DWORD [dVar1]
+(gdb) $2 = 26000
+(gdb) Continuing.
+
+Breakpoint 3, _start () at prog.asm:47
+47		mov rax, QWORD [qVar1]
+(gdb) $3 = 26000000
+(gdb) Continuing.
+
+Breakpoint 4, _start () at prog.asm:52
+52		mov rax, SYS_exit
+(gdb) $4 = 260000000
+(gdb) A debugging session is active.
+
+	Inferior 1 [process 36182] will be killed.
+
+Quit anyway? (y or n) [answered Y; input not from terminal]

@@ -1,0 +1,16 @@
+set prompt
+set logging redirect on
+set logging overwrite on
+set logging on
+file itos
+break itos.asm:64
+run
+echo ---\n
+x/s &Buffer1
+x/s &Buffer2
+x/s &Buffer3
+x/s &Buffer4
+x/s &Buffer5
+echo ---\n
+continue
+quit

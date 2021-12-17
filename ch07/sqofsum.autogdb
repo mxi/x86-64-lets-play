@@ -1,0 +1,14 @@
+set pagination off
+set logging overwrite on
+set logging redirect
+set logging on
+set prompt
+file sqofsum
+break sqofsum.asm:30
+run
+echo ---\n
+printf "SqSum = %lld\n", (long long)SqSum
+echo ---\n
+continue
+quit
+

@@ -1,0 +1,16 @@
+set pagination off
+set prompt
+set logging overwrite on
+set logging redirect on
+set logging on
+file stats
+break stats.asm:84
+run
+echo ---\n
+printf "len=%d @(%p) tot=%d min=%d max=%d avg=%d\n", (int)Len0, (int*)&Arr0, (int)Tot0, (int)Min0, (int)Max0, (int)Avg0
+printf "len=%d @(%p) tot=%d min=%d max=%d avg=%d\n", (int)Len1, (int*)&Arr1, (int)Tot1, (int)Min1, (int)Max1, (int)Avg1
+printf "len=%d @(%p) tot=%d min=%d max=%d avg=%d\n", (int)Len2, (int*)&Arr2, (int)Tot2, (int)Min2, (int)Max2, (int)Avg2
+printf "len=%d @(%p) tot=%d min=%d max=%d avg=%d\n", (int)Len3, (int*)&Arr3, (int)Tot3, (int)Min3, (int)Max3, (int)Avg3
+echo ---\n
+continue
+quit
