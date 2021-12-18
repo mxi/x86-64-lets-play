@@ -1,4 +1,7 @@
-%macro call_stats 9
+%include "nisqrt_alone.asm"
+
+%macro call_stats 10
+	push     %10
 	push     %9
 	push     %8
 	push     %7
@@ -9,7 +12,7 @@
 	mov rsi, %2
 	mov rdi, %1
 	call stats
-	add rsp, 24 ; clear stack
+	add rsp, 32 ; clear stack
 %endmacro
 
 %macro require_non_null 2
@@ -42,6 +45,7 @@ section .bss
 	Sum  resq 1
 	Avg  resq 1
 	Var  resq 1
+	Stdv resq 1
 
 section .text
 global stats
@@ -59,6 +63,7 @@ stats:
 	;     rbp+16 = sum ptr (int64*)
 	;     rbp+24 = avg ptr (int64*)
 	;     rbp+32 = var ptr (int64*)
+	;     rbp+40 = stdev ptr (int64*)
 	; RETURN
 	;     rax = arr ptr (0 on failure)
 	push rbp
@@ -76,6 +81,7 @@ stats:
 	require_non_null QWORD [rbp+16], stats_end
 	require_non_null QWORD [rbp+24], stats_end
 	require_non_null QWORD [rbp+32], stats_end
+	require_non_null QWORD [rbp+40], stats_end
 
 	; fetch min
 	mov r10, QWORD [rdi]
@@ -144,9 +150,14 @@ stats_var_loop:
 	mov rdx, 0
 	div rsi
 	mov QWORD [rbx], rax
-
-	; 
 	pop rdx
+
+	; compute stdev
+	push rdi
+	call_nisqrt rax
+	mov rbx, QWORD [rbp+40]
+	mov QWORD [rbx], rax
+	pop rdi
 
 	; return arr ptr
 	mov rax, rdi
@@ -158,7 +169,7 @@ stats_end:
 ret
 
 _start:
-	call_stats Arr, QWORD [Len], Min, Med1, Med2, Max, Sum, Avg, Var
+	call_stats Arr, QWORD [Len], Min, Med1, Med2, Max, Sum, Avg, Var, Stdv
 
 	; exit
 	mov rax, 60
