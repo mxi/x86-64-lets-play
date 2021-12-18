@@ -6,6 +6,7 @@ section .rodata
 	SYS_read     equ 0
 	SYS_write    equ 1
 	SYS_open     equ 2
+	SYS_close    equ 3
 	SYS_exit     equ 60
 
 	; std fds
