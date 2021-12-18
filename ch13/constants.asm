@@ -1,3 +1,5 @@
+%ifndef _CONSTANTS_ASM
+%define _CONSTANTS_ASM
 section .rodata
 	; characters
 	LF           equ 0x0a
@@ -52,3 +54,4 @@ section .rodata
 	; exit params
 	EXIT_success equ 0
 	EXIT_failure equ 1
+%endif ; _CONSTANTS_ASM
