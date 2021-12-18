@@ -21,7 +21,6 @@ fdump:
 	;        = -3 (failed to write)
 	;        = -4 (null file path)
 	;        = -5 (null buf ptr)
-	;        = -6 (null buf size)
 %define fdump_Lfile   QWORD [rbp-8]
 %define fdump_Lbufptr QWORD [rbp-16]
 %define fdump_Lbuflen QWORD [rbp-24]
@@ -31,20 +30,18 @@ fdump:
 	mov rbp, rsp
 	sub rsp, 40 ; local variables and register saves
 
-	; validation
-	cmp rdi, 0
-	je fdump_err_null_file_path
-	cmp rsi, 0
-	je fdump_err_null_buf_ptr
-	cmp rdx, 0
-	je fdump_err_null_buf_size
-
 	; save registers and initialize local vars
 	mov fdump_Lfile, rdi
 	mov fdump_Lbufptr, rsi
 	mov fdump_Lbuflen, rdx
 	mov fdump_Lfd, -1
 	mov fdump_Lnwrote, 0
+
+	; validation
+	cmp rsi, 0
+	je fdump_err_null_buf_ptr
+	cmp rdi, 0
+	je fdump_err_null_file_path
 
 	; setup open flags & try open
 	mov rdx, 0
@@ -79,9 +76,6 @@ fdump:
 	jl fdump_err_close
 
 	jmp fdump_finish
-fdump_err_null_buf_size:
-	mov rax, -6
-	jmp fdump_end
 fdump_err_null_buf_ptr:
 	mov rax, -5
 	jmp fdump_end
