@@ -1,0 +1,24 @@
+1)	rax register
+
+2)	machine code: @ OS kernel
+	syscall code: rax register
+
+3)	write(2)
+	rax = 1
+	rdi = file descriptor (STDOUT = 1)
+	rsi = string buffer
+	rdx = char count
+
+4)	[x] To prevent over-reading onto the next line. [unknown
+	# of chars read]
+
+5)	[x] A positive file descriptor. [in $rax]
+
+6)	A negative error code.
+
+7)	%1 = rdi
+	%2 = rsi
+	%3 = rdx
+	%4 = r10
+	%5 = r8
+	%6 = r9
