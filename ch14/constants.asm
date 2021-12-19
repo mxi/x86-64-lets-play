@@ -9,6 +9,7 @@ section .rodata
 	SYS_write    equ 1
 	SYS_open     equ 2
 	SYS_close    equ 3
+	SYS_lseek    equ 8
 	SYS_exit     equ 60
 
 	; std fds
@@ -50,6 +51,11 @@ section .rodata
 	S_IROTH      equ 00004q
 	S_IWOTH      equ 00002q
 	S_IXOTH      equ 00001q
+
+	; seek params
+	SEEK_SET	 equ 0
+	SEEK_CUR	 equ 1
+	SEEK_END	 equ 2
 
 	; exit params
 	EXIT_success equ 0
