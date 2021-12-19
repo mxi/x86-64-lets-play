@@ -1,0 +1,25 @@
+1)	Stack smashing
+
+2)	It doesn not perform bounds checking [of input
+	arguments.]
+
+3)	Yes, probably more so because of the NOP slide
+	technique.
+
+4)	Input a malicious piece of binary code and attempt
+	to override either $rbp or $rip and monitor for
+	suspicious behaviour or segfaults.
+
+	[also type in many characters instead of binary]
+
+5)	Padding malicious code with NOPs to create a larger
+	surface for an attacker to guess the location of
+	their inputted malicious code.
+
+6)	1. Overwrite privileged/protected files;
+	2. Open sockets to various places;
+	3. etc.
+
+7)	Canaries/stack protectors, Memory pages flagged as
+	non executable (Data execution protection), Address
+	space layout randomization.
