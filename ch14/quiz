@@ -1,0 +1,24 @@
+1)	ASSEMBLY
+		1. extern func1
+		2. extern func2
+		[x] OR `extern func1, func2'
+	C
+		1. extern T func1();
+		2. extern T func2();
+
+2)	ASSEMBLY
+		1. extern func1
+		2. extern func2
+		[x] OR `extern func1, func2'
+	C
+		1. extern T func1(int, int);
+		2. extern T func2(int, int);
+
+3)	Assemble/compile-time error.
+
+4)	Link-time
+
+5)	Failed to locate symbol "<symbol_name>";
+	Undefined reference to "<symbol_name>"
+
+6)	Yes, but without the debug information.
