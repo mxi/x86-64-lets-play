@@ -55,6 +55,15 @@ Outline & Notable Files
 	- ovstat.asm: overly complicated stat function to exercise 
 	              reasoning of parameters, local variables, and local
 				  arrays in x86-64.
+- ch15: stack buffer overlow
+	- malicious.asm: injected into unsafe program input
+	- unsafe.asm: program with user input not checking bounds
+		- This was intended to demonstrate how malicious input can 
+		  spawn a new process with `execv,' but it appears the NOP
+		  slide is tedious to get working correctly and having correct
+		  alignment to override the $rip in the call stack, so I left
+		  it segfaulting for demonstration.
+	- canary.asm: program with user input and stack protection
 
 Notes
 -----------------------------------------------------------------------
