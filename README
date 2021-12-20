@@ -64,6 +64,10 @@ Outline & Notable Files
 		  alignment to override the $rip in the call stack, so I left
 		  it segfaulting for demonstration.
 	- canary.asm: program with user input and stack protection
+- ch16: command-line arguments
+	- echo.asm: prints arguments on each line (including args[0])
+	- cat.asm: prints contents of file specified on command-line
+	- lsum.asm: sums a list of numbers from the command-line
 
 Notes
 -----------------------------------------------------------------------
