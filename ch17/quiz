@@ -1,0 +1,31 @@
+1)	Linux: LF,
+	Windows: CR, LF
+
+2)	[x] The use of a block of memory to store input/output
+	data to avoid IO overhead. [for quick access.]
+
+3)	In abstractions such as `getline()'
+
+4)	The programmer can focus on making programs.
+
+5)	Reducing syscall overhead.
+
+6)	The location of the next LF is unknown.
+
+7)	No need to go out to disk to read data.
+
+8)	No need for expensive context switching.
+
+9)	To maintain state over multiple calls.
+
+10)	By checking whether the no. of characters read
+	is less than the buffer size.
+
+11)	The drive has disconnected.
+
+12)	Set and EOF flag.
+
+13)	To not overwrite anything past the text line buffer.
+
+14)	It checks whether the current index is at the end
+	of the buffer first.
