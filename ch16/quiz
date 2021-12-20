@@ -1,0 +1,16 @@
+1)	The operating system. [the loader.]
+
+2)	The program receiving the command-line args.
+
+3)	The program name (from `execv'.)
+
+4)	argc: int -- number of arguments in arg vec table.
+	argv: char ** -- arg vec table.
+
+5)	$rdi
+
+6)	$rsi
+
+7)	The shell removes them during parsing.
+
+8)	No, it is a valid string.
