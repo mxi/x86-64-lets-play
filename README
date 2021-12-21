@@ -68,6 +68,8 @@ Outline & Notable Files
 	- echo.asm: prints arguments on each line (including args[0])
 	- cat.asm: prints contents of file specified on command-line
 	- lsum.asm: sums a list of numbers from the command-line
+- ch17: input/output buffering
+	- nm.asm: bootleg version of GNU `nl`
 
 Notes
 -----------------------------------------------------------------------
