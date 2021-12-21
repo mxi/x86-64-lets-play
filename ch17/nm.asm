@@ -4,10 +4,15 @@
 section .rodata
 	EMsgFewArgs db "too few arguments: nm INFILE OUTFILE", LF, 0
 	EMsgLotArgs db "too many arguments: nm INFILE OUTFILE", LF, 0
-	EMsgSrcOpen db "failed to open INFILE: nm INFILE OUTFILE", LF, 0
-	EMsgDstOpen db "failed to open OUTFILE: nm INFILE OUTFILE", LF, 0
+	EMsgSrcOpen db "failed to open INFILE.", LF, 0
+	EMsgDstOpen db "failed to open OUTFILE.", LF, 0
+	EMsgRdFail  db "failed to read buffer.", LF, 0
+	EMsgWrFail  db "failed to write buffer.", LF, 0
+
+	NmDelim equ " "
 
 section .data
+	ExCode dq 0
 	RdBufSz equ 128
 	WrBufSz equ 128
 
@@ -76,12 +81,27 @@ _start:
 	mov QWORD [WrFiDes], rax
 
 	; number input file lines and transfer to output
-	mov rbx, 1 ; line numbers
-	jmp _start_flush ; actually starts the loop
+	mov rbx, 1 ; line number
+	; initialize read pointers
+	mov r10, RdBuf
+	mov QWORD [RdItr], r10
+	mov r12, r10
+	mov QWORD [RdEnd], r10
+	mov r13, r10
+	; initialize write pointers
+	mov r10, WrBuf
+	mov QWORD [WrItr], r10
+	add r10, WrBufSz
+	mov QWORD [WrEnd], r10
+	; the loop actually starts with a flush to load $r14, $r15
+	jmp _start_flush
 _start_read_loop:
 	call readbuf
+	cmp rax, 0
+	jl _start_err_read
 	mov r12, QWORD [RdItr]
-	cmp r13, QWORD [RdEnd]
+	mov r13, QWORD [RdEnd]
+	cmp r12, r13
 	je _start_read_loop_end
 _start_transfer_loop:
 	cmp r14, r15
@@ -92,17 +112,42 @@ _start_transfer_loop:
 	mov BYTE [r14], r10b
 	inc r12
 	inc r14
+	mov QWORD [RdItr], r12
+	mov QWORD [WrItr], r14
 	cmp r10b, LF ; if newline, flush
 	jne _start_transfer_loop
 _start_flush:
 	call writebuf ; when write buffer is empty, this is basically noop
-
-	mov r14, QWORD [WrItr]
+	cmp rax, 0
+	jl _start_err_write
+	mov rdx, rbx
+	inc rbx
+	mov rsi, QWORD [WrEnd]
+	sub rsi, QWORD [WrItr]
+	dec rsi ; precaution since we need to add a space after the number
+	mov rdi, QWORD [WrItr]
+	call itos
+	mov BYTE [rax], NmDelim
+	lea r14, [rax+1]
 	mov r15, QWORD [WrEnd]
 	jmp _start_transfer_loop
 _start_read_loop_end:
-	
-
+	call writebuf ; flush remaining data
+	cmp rax, 0
+	jl _start_err_write
+	jmp _start_err_io_done
+_start_err_read:
+	mov rsi, EMsgRdFail
+	mov rdi, SYS_stderr
+	call print
+	mov QWORD [ExCode], 33
+	jmp _start_err_io_done
+_start_err_write:
+	mov rsi, EMsgWrFail
+	mov rdi, SYS_stderr
+	call print
+	mov QWORD [ExCode], 32
+_start_err_io_done:
 	; close file descriptors
 	mov rdi, RdFiDes
 	mov rax, SYS_close
@@ -112,11 +157,10 @@ _start_read_loop_end:
 	mov rax, SYS_close
 	syscall
 
-	; all good, skip error handlers
-	mov rdi, EXIT_success
+	mov rdi, QWORD [ExCode]
 	jmp _start_end
 
-	; error handling 
+	; simple error handling 
 %macro _start_ehandler 3
 _start_err_%1:
 	mov rsi, %2
@@ -130,25 +174,12 @@ _start_err_%1:
 	_start_ehandler src_open, EMsgSrcOpen, 3
 	_start_ehandler few_args, EMsgFewArgs, 2
 	_start_ehandler lot_args, EMsgLotArgs, 1
-; _start_err_src_open:
-; 	mov rsi, EMsgSrcOpen
-; 	mov rdi, SYS_stderr
-; 	call print
-; 	mov rdi, 3
-; 	jmp _start_end
-; _start_err_few_args:
-; 	mov rsi, EMsgFewArgs
-; 	mov rdi, SYS_stderr
-; 	call print
-; 	mov rdi, 2
-; 	jmp _start_end
-; _start_err_lot_args:
-; 	mov rsi, EMsgLotArgs
-; 	mov rdi, SYS_stderr
-; 	call print
-; 	mov rdi, 1
-; 	jmp _start_end
 _start_end:
+	pop r15
+	pop r14
+	pop r13
+	pop r12
+	pop rbx
 	mov rsp, rbp
 	pop rbp
 	; exit
@@ -188,6 +219,47 @@ print_end:
 ret
 
 
+readbuf:
+	; Assuming RdFiDes is a valid file descriptor, loads in the next
+	; block of data from the object into WrBuf and resets WrItr and
+	; WrEnd pointers.
+	; RETURN
+	;     rax = directly after `syscall', < 0 is a failure.
+	mov rdx, RdBufSz
+	mov rsi, RdBuf
+	mov rdi, QWORD [RdFiDes]
+	mov rax, SYS_read
+	syscall
+	cmp rax, 0
+	jl readbuf_end
+	mov r10, RdBuf
+	mov QWORD [RdItr], r10
+	add r10, rax
+	mov QWORD [RdEnd], r10
+readbuf_end:
+ret
+
+
+writebuf:
+	; Assuming WrFiDes is a valid file descriptor, dumps the contents
+	; of WrBuf bounded by inclusive address range [&WrBuf, WrItr], and
+	; reset WrItr to &WrBuf (beginning.)
+	; RETURN
+	;     rax = directly after `syscall', < 0 is a failure.
+	mov rdx, QWORD [WrItr]
+	sub rdx, WrBuf
+	mov rsi, WrBuf
+	mov rdi, QWORD [WrFiDes]
+	mov rax, SYS_write
+	syscall
+	cmp rax, 0
+	jl writebuf_end
+	mov r10, WrBuf
+	mov QWORD [WrItr], r10
+writebuf_end:
+ret
+
+
 itos:
 	; Writes an integer into a string buffer.
 	; PARAMS
@@ -198,6 +270,7 @@ itos:
 	;     rax = position in the buffer right after the number.
 	push rbx
 	push r12
+	push r13
 
 	; validation
 	mov rax, rdi
@@ -244,6 +317,7 @@ itos_digit_pop_loop:
 	jmp itos_digit_pop_loop
 itos_end:
 	mov rax, rdi
+	pop r13
 	pop r12
 	pop rbx
 ret

@@ -73,249 +73,351 @@
     73 00000026 3A206E6D20494E4649-
     74 00000026 4C45204F555446494C-
     75 00000026 450A00             
-    76 0000004D 6661696C656420746F-     EMsgSrcOpen db "failed to open INFILE: nm INFILE OUTFILE", LF, 0
+    76 0000004D 6661696C656420746F-     EMsgSrcOpen db "failed to open INFILE.", LF, 0
     77 0000004D 206F70656E20494E46-
-    78 0000004D 494C453A206E6D2049-
-    79 0000004D 4E46494C45204F5554-
-    80 0000004D 46494C450A00       
-    81 00000077 6661696C656420746F-     EMsgDstOpen db "failed to open OUTFILE: nm INFILE OUTFILE", LF, 0
-    82 00000077 206F70656E204F5554-
-    83 00000077 46494C453A206E6D20-
-    84 00000077 494E46494C45204F55-
-    85 00000077 5446494C450A00     
-    86                                 
-    87                                 [section .data]
-    88                                  RdBufSz equ 128
-    89                                  WrBufSz equ 128
-    90 00000000 27F3FFFFFFFFFFFF        Num dq -3289
-    91                                 
-    92                                 [section .bss]
-    93 00000000 <gap>                   RdFiDes resq 1
-    94 00000008 <gap>                   RdBuf resb RdBufSz
+    78 0000004D 494C452E0A00       
+    79 00000065 6661696C656420746F-     EMsgDstOpen db "failed to open OUTFILE.", LF, 0
+    80 00000065 206F70656E204F5554-
+    81 00000065 46494C452E0A00     
+    82 0000007E 6661696C656420746F-     EMsgRdFail db "failed to read buffer.", LF, 0
+    83 0000007E 207265616420627566-
+    84 0000007E 6665722E0A00       
+    85 00000096 6661696C656420746F-     EMsgWrFail db "failed to write buffer.", LF, 0
+    86 00000096 207772697465206275-
+    87 00000096 666665722E0A00     
+    88                                 
+    89                                  NmDelim equ " "
+    90                                 
+    91                                 [section .data]
+    92 00000000 0000000000000000        ExCode dq 0
+    93                                  RdBufSz equ 128
+    94                                  WrBufSz equ 128
     95                                 
-    96 00000088 <gap>                   WrFiDes resq 1
-    97 00000090 <gap>                   WrBuf resb WrBufSz
-    98                                 
-    99 00000110 <gap>                   NumBuf resb 5
-   100                                 
-   101                                 [section .text]
-   102                                 [global _start]
-   103                                 [global print]
-   104                                 [global itos]
-   105                                 
-   106                                 _start:
-   107 00000000 55                      push rbp
-   108 00000001 4889E5                  mov rbp, rsp
-   109                                 
-   110                                 
-   111 00000004 488B1425[00000000]      mov rdx, QWORD [Num]
-   112 0000000C 48C7C600000000          mov rsi, 0
-   113 00000013 48C7C7[00000000]        mov rdi, NumBuf
-   114 0000001A E867010000              call itos
+    96                                 [section .bss]
+    97 00000000 <gap>                   RdItr resq 1
+    98 00000008 <gap>                   RdEnd resq 1
+    99 00000010 <gap>                   RdFiDes resq 1
+   100 00000018 <gap>                   RdBuf resb RdBufSz
+   101                                 
+   102 00000098 <gap>                   WrItr resq 1
+   103 000000A0 <gap>                   WrEnd resq 1
+   104 000000A8 <gap>                   WrFiDes resq 1
+   105 000000B0 <gap>                   WrBuf resb WrBufSz
+   106                                 
+   107 00000130 <gap>                   NumBuf resb 5
+   108                                 
+   109                                 [section .text]
+   110                                 [global _start]
+   111                                 [global readbuf]
+   112                                 [global writebuf]
+   113                                 [global print]
+   114                                 [global itos]
    115                                 
-   116 0000001F 48C7C03C000000          mov rax, 60
-   117 00000026 48C7C700000000          mov rdi, 0
-   118 0000002D 0F05                    syscall
-   119                                 
-   120                                 
-   121                                 
-   122                                 
-   123 0000002F 4C8B6508                mov r12, QWORD [rbp+8]
-   124 00000033 4983FC03                cmp r12, 3
-   125 00000037 0F8CD9000000            jl _start_err_few_args
-   126 0000003D 0F8FEF000000            jg _start_err_lot_args
+   116                                 _start:
+   117 00000000 55                      push rbp
+   118 00000001 4889E5                  mov rbp, rsp
+   119 00000004 53                      push rbx
+   120 00000005 4154                    push r12
+   121 00000007 4155                    push r13
+   122 00000009 4156                    push r14
+   123 0000000B 4157                    push r15
+   124                                 
+   125                                 
+   126                                 
    127                                 
-   128                                 
-   129 00000043 48C7C200000000          mov rdx, 0
-   130 0000004A 48C7C600000000          mov rsi, 0
-   131 00000051 4883CE00                or rsi, O_RDONLY
-   132 00000055 488B7D18                mov rdi, QWORD [rbp+24]
-   133 00000059 48C7C002000000          mov rax, SYS_open
-   134 00000060 0F05                    syscall
-   135 00000062 4883F800                cmp rax, 0
-   136 00000066 0F8C8E000000            jl _start_err_src_open
-   137 0000006C 48890425[00000000]      mov QWORD [RdFiDes], rax
-   138                                 
-   139                                 
-   140 00000074 48C7C200000000          mov rdx, 0
-   141 0000007B 4881CA00010000          or rdx, S_IRUSR
-   142 00000082 4881CA80000000          or rdx, S_IWUSR
-   143 00000089 4883CA20                or rdx, S_IRGRP
-   144 0000008D 4883CA04                or rdx, S_IROTH
-   145 00000091 48C7C600000000          mov rsi, 0
-   146 00000098 4883CE40                or rsi, O_CREAT
-   147 0000009C 4883CE01                or rsi, O_WRONLY
-   148 000000A0 488B7D20                mov rdi, QWORD [rbp+32]
-   149 000000A4 48C7C002000000          mov rax, SYS_open
-   150 000000AB 0F05                    syscall
-   151 000000AD 4883F800                cmp rax, 0
-   152 000000B1 7C2F                    jl _start_err_dst_open
-   153 000000B3 48890425[00000000]      mov QWORD [WrFiDes], rax
-   154                                 
-   155                                 
-   156                                 
-   157                                 
-   158 000000BB 48C7C7[00000000]        mov rdi, RdFiDes
-   159 000000C2 48C7C003000000          mov rax, SYS_close
-   160 000000C9 0F05                    syscall
-   161                                 
-   162 000000CB 48C7C7[00000000]        mov rdi, WrFiDes
-   163 000000D2 48C7C003000000          mov rax, SYS_close
-   164 000000D9 0F05                    syscall
-   165                                 
-   166                                 
-   167 000000DB 48C7C700000000          mov rdi, EXIT_success
-   168 000000E2 EB6E                    jmp _start_end
-   169                                 
-   170                                 
-   171                                 %line 102+1 nm.asm
-   172                                 
-   173                                 _start_err_dst_open:
-   174                                 %line 103+0 nm.asm
-   175 000000E4 48C7C6[00000000]        mov rsi, EMsgDstOpen
-   176 000000EB 48C7C702000000          mov rdi, SYS_stderr
-   177 000000F2 E865000000              call print
-   178 000000F7 48C7C704000000          mov rdi, 4
-   179 000000FE EB52                    jmp _start_end
-   180                                 %line 104+1 nm.asm
-   181                                 _start_err_src_open:
-   182                                 %line 104+0 nm.asm
-   183 00000100 48C7C6[00000000]        mov rsi, EMsgSrcOpen
-   184 00000107 48C7C702000000          mov rdi, SYS_stderr
-   185 0000010E E849000000              call print
-   186 00000113 48C7C703000000          mov rdi, 3
-   187 0000011A EB36                    jmp _start_end
-   188                                 %line 105+1 nm.asm
-   189                                 _start_err_few_args:
-   190                                 %line 105+0 nm.asm
-   191 0000011C 48C7C6[00000000]        mov rsi, EMsgFewArgs
-   192 00000123 48C7C702000000          mov rdi, SYS_stderr
-   193 0000012A E82D000000              call print
-   194 0000012F 48C7C702000000          mov rdi, 2
-   195 00000136 EB1A                    jmp _start_end
-   196                                 %line 106+1 nm.asm
-   197                                 _start_err_lot_args:
-   198                                 %line 106+0 nm.asm
-   199 00000138 48C7C6[00000000]        mov rsi, EMsgLotArgs
-   200 0000013F 48C7C702000000          mov rdi, SYS_stderr
-   201 00000146 E811000000              call print
-   202 0000014B 48C7C701000000          mov rdi, 1
-   203 00000152 EBFE                    jmp _start_end
-   204                                 %line 107+1 nm.asm
-   205                                 
-   206                                 
-   207                                 
-   208                                 
-   209                                 
-   210                                 
-   211                                 
-   212                                 
-   213                                 
-   214                                 
-   215                                 
-   216                                 
-   217                                 
-   218                                 
-   219                                 
-   220                                 
-   221                                 
-   222                                 
-   223                                 _start_end:
-   224 00000154 4889EC                  mov rsp, rbp
-   225 00000157 5D                      pop rbp
-   226                                 
-   227 00000158 48C7C03C000000          mov rax, SYS_exit
-   228 0000015F 0F05                    syscall
-   229                                 
+   128 0000000D 4C8B6508                mov r12, QWORD [rbp+8]
+   129 00000011 4983FC03                cmp r12, 3
+   130 00000015 0F8C02020000            jl _start_err_few_args
+   131 0000001B 0F8F18020000            jg _start_err_lot_args
+   132                                 
+   133                                 
+   134 00000021 48C7C200000000          mov rdx, 0
+   135 00000028 48C7C600000000          mov rsi, 0
+   136 0000002F 4883CE00                or rsi, O_RDONLY
+   137 00000033 488B7D18                mov rdi, QWORD [rbp+24]
+   138 00000037 48C7C002000000          mov rax, SYS_open
+   139 0000003E 0F05                    syscall
+   140 00000040 4883F800                cmp rax, 0
+   141 00000044 0F8CB7010000            jl _start_err_src_open
+   142 0000004A 48890425[00000000]      mov QWORD [RdFiDes], rax
+   143                                 
+   144                                 
+   145 00000052 48C7C200000000          mov rdx, 0
+   146 00000059 4881CA00010000          or rdx, S_IRUSR
+   147 00000060 4881CA80000000          or rdx, S_IWUSR
+   148 00000067 4883CA20                or rdx, S_IRGRP
+   149 0000006B 4883CA04                or rdx, S_IROTH
+   150 0000006F 48C7C600000000          mov rsi, 0
+   151 00000076 4883CE40                or rsi, O_CREAT
+   152 0000007A 4883CE01                or rsi, O_WRONLY
+   153 0000007E 488B7D20                mov rdi, QWORD [rbp+32]
+   154 00000082 48C7C002000000          mov rax, SYS_open
+   155 00000089 0F05                    syscall
+   156 0000008B 4883F800                cmp rax, 0
+   157 0000008F 0F8C50010000            jl _start_err_dst_open
+   158 00000095 48890425[00000000]      mov QWORD [WrFiDes], rax
+   159                                 
+   160                                 
+   161 0000009D 48C7C301000000          mov rbx, 1
+   162                                 
+   163 000000A4 49C7C2[00000000]        mov r10, RdBuf
+   164 000000AB 4C891425[00000000]      mov QWORD [RdItr], r10
+   165 000000B3 4D89D4                  mov r12, r10
+   166 000000B6 4C891425[00000000]      mov QWORD [RdEnd], r10
+   167 000000BE 4D89D5                  mov r13, r10
+   168                                 
+   169 000000C1 49C7C2[00000000]        mov r10, WrBuf
+   170 000000C8 4C891425[00000000]      mov QWORD [WrItr], r10
+   171 000000D0 4981C280000000          add r10, WrBufSz
+   172 000000D7 4C891425[00000000]      mov QWORD [WrEnd], r10
+   173                                 
+   174 000000DF EB4F                    jmp _start_flush
+   175                                 _start_read_loop:
+   176 000000E1 E8B0010000              call readbuf
+   177 000000E6 4883F800                cmp rax, 0
+   178 000000EA 0F8C8B000000            jl _start_err_read
+   179 000000F0 4C8B2425[00000000]      mov r12, QWORD [RdItr]
+   180 000000F8 4C8B2C25[00000000]      mov r13, QWORD [RdEnd]
+   181 00000100 4D39EC                  cmp r12, r13
+   182 00000103 746D                    je _start_read_loop_end
+   183                                 _start_transfer_loop:
+   184 00000105 4D39FE                  cmp r14, r15
+   185 00000108 7426                    je _start_flush
+   186 0000010A 4D39EC                  cmp r12, r13
+   187 0000010D 74D0                    je _start_read_loop
+   188 0000010F 458A1424                mov r10b, BYTE [r12]
+   189 00000113 458816                  mov BYTE [r14], r10b
+   190 00000116 49FFC4                  inc r12
+   191 00000119 49FFC6                  inc r14
+   192 0000011C 4C892425[00000000]      mov QWORD [RdItr], r12
+   193 00000124 4C893425[00000000]      mov QWORD [WrItr], r14
+   194 0000012C 4180FA0A                cmp r10b, LF
+   195 00000130 75D1                    jne _start_transfer_loop
+   196                                 _start_flush:
+   197 00000132 E89F010000              call writebuf
+   198 00000137 4883F800                cmp rax, 0
+   199 0000013B 7C63                    jl _start_err_write
+   200 0000013D 4889DA                  mov rdx, rbx
+   201 00000140 48FFC3                  inc rbx
+   202 00000143 488B3425[00000000]      mov rsi, QWORD [WrEnd]
+   203 0000014B 482B3425[00000000]      sub rsi, QWORD [WrItr]
+   204 00000153 48FFCE                  dec rsi
+   205 00000156 488B3C25[00000000]      mov rdi, QWORD [WrItr]
+   206 0000015E E8B0010000              call itos
+   207 00000163 C60020                  mov BYTE [rax], NmDelim
+   208 00000166 4C8D7001                lea r14, [rax+1]
+   209 0000016A 4C8B3C25[00000000]      mov r15, QWORD [WrEnd]
+   210 00000172 EB8F                    jmp _start_transfer_loop
+   211                                 _start_read_loop_end:
+   212 00000174 E85D010000              call writebuf
+   213 00000179 4883F800                cmp rax, 0
+   214 0000017D 7C21                    jl _start_err_write
+   215 0000017F EB3E                    jmp _start_err_io_done
+   216                                 _start_err_read:
+   217 00000181 48C7C6[00000000]        mov rsi, EMsgRdFail
+   218 00000188 48C7C702000000          mov rdi, SYS_stderr
+   219 0000018F E8D8000000              call print
+   220 00000194 48C70425[00000000]-     mov QWORD [ExCode], 33
+   221 00000194 21000000           
+   222 000001A0 EB1D                    jmp _start_err_io_done
+   223                                 _start_err_write:
+   224 000001A2 48C7C6[00000000]        mov rsi, EMsgWrFail
+   225 000001A9 48C7C702000000          mov rdi, SYS_stderr
+   226 000001B0 E8B7000000              call print
+   227 000001B5 48C70425[00000000]-     mov QWORD [ExCode], 32
+   228 000001B5 20000000           
+   229                                 _start_err_io_done:
    230                                 
-   231                                 print:
-   232                                 
-   233                                 
+   231 000001C1 48C7C7[00000000]        mov rdi, RdFiDes
+   232 000001C8 48C7C003000000          mov rax, SYS_close
+   233 000001CF 0F05                    syscall
    234                                 
-   235                                 
-   236                                 
-   237                                 
+   235 000001D1 48C7C7[00000000]        mov rdi, WrFiDes
+   236 000001D8 48C7C003000000          mov rax, SYS_close
+   237 000001DF 0F05                    syscall
    238                                 
-   239                                 
-   240 00000161 4883FF00                cmp rdi, 0
-   241 00000165 7421                    jz print_end
-   242 00000167 4883FE00                cmp rsi, 0
-   243 0000016B 741B                    jz print_end
+   239 000001E1 488B3C25[00000000]      mov rdi, QWORD [ExCode]
+   240 000001E9 EB6E                    jmp _start_end
+   241                                 
+   242                                 
+   243                                 %line 172+1 nm.asm
    244                                 
-   245                                 
-   246 0000016D 4989F2                  mov r10, rsi
-   247                                 print_strlen_loop:
-   248 00000170 41803A00                cmp BYTE [r10], 0
-   249 00000174 7403                    jz print_strlen_loop_end
-   250 00000176 49FFC2                  inc r10
-   251 00000179 EBF3                    jmp print_strlen_loop
-   252                                 print_strlen_loop_end:
-   253 0000017B 4C89D2                  mov rdx, r10
-   254 0000017E 4829F2                  sub rdx, rsi
-   255                                 
-   256                                 
-   257 00000181 48C7C001000000          mov rax, SYS_write
-   258 00000188 0F05                    syscall
-   259                                 print_end:
-   260 0000018A C3                     ret
-   261                                 
-   262                                 
-   263                                 itos:
-   264                                 
-   265                                 
-   266                                 
-   267                                 
-   268                                 
-   269                                 
-   270                                 
-   271 0000018B 53                      push rbx
-   272 0000018C 4154                    push r12
-   273                                 
-   274                                 
-   275 0000018E 4889F8                  mov rax, rdi
-   276 00000191 4883FF00                cmp rdi, 0
-   277 00000195 746D                    jz itos_end
-   278                                 
-   279 00000197 4883FE00                cmp rsi, 0
-   280 0000019B 7467                    jz itos_end
-   281                                 
-   282                                 
-   283 0000019D 4889D0                  mov rax, rdx
-   284 000001A0 48C7C30A000000          mov rbx, 10
-   285 000001A7 49C7C400000000          mov r12, 0
-   286 000001AE 49C7C500000000          mov r13, 0
-   287 000001B5 4883F800                cmp rax, 0
-   288 000001B9 7D0B                    jge itos_digit_push_loop
-   289 000001BB 49C7C401000000          mov r12, 1
-   290 000001C2 49FFC5                  inc r13
-   291 000001C5 48F7D8                  neg rax
-   292                                 itos_digit_push_loop:
-   293 000001C8 4939F5                  cmp r13, rsi
-   294 000001CB 7414                    je itos_digit_push_loop_end
-   295 000001CD 4831D2                  xor rdx, rdx
-   296 000001D0 48F7F3                  div rbx
-   297 000001D3 4883C230                add rdx, 0x30
-   298 000001D7 52                      push rdx
-   299 000001D8 49FFC5                  inc r13
-   300 000001DB 4883F800                cmp rax, 0
-   301 000001DF 7400                    je itos_digit_push_loop_end
-   302 000001E1 EBE3                    jmp itos_digit_push_loop
-   303                                 itos_digit_push_loop_end:
-   304 000001E3 4983FC01                cmp r12, 1
-   305 000001E7 7508                    jne itos_digit_pop_loop
-   306 000001E9 48C7C300000000          mov rbx, 0
-   307 000001F0 B32D                    mov bl, "-"
-   308 000001F2 53                      push rbx
-   309                                 itos_digit_pop_loop:
-   310 000001F3 4983FD00                cmp r13, 0
-   311 000001F7 740B                    je itos_end
-   312 000001F9 415C                    pop r12
-   313 000001FB 448827                  mov BYTE [rdi], r12b
-   314 000001FE 48FFC7                  inc rdi
-   315 00000201 49FFCD                  dec r13
-   316 00000204 EBEB                    jmp itos_digit_pop_loop
-   317                                 itos_end:
-   318 00000206 4889F8                  mov rax, rdi
-   319 00000209 415C                    pop r12
-   320 0000020B 5B                      pop rbx
-   321 0000020C C3                     ret
+   245                                 _start_err_dst_open:
+   246                                 %line 173+0 nm.asm
+   247 000001EB 48C7C6[00000000]        mov rsi, EMsgDstOpen
+   248 000001F2 48C7C702000000          mov rdi, SYS_stderr
+   249 000001F9 E86E000000              call print
+   250 000001FE 48C7C704000000          mov rdi, 4
+   251 00000205 EB52                    jmp _start_end
+   252                                 %line 174+1 nm.asm
+   253                                 _start_err_src_open:
+   254                                 %line 174+0 nm.asm
+   255 00000207 48C7C6[00000000]        mov rsi, EMsgSrcOpen
+   256 0000020E 48C7C702000000          mov rdi, SYS_stderr
+   257 00000215 E852000000              call print
+   258 0000021A 48C7C703000000          mov rdi, 3
+   259 00000221 EB36                    jmp _start_end
+   260                                 %line 175+1 nm.asm
+   261                                 _start_err_few_args:
+   262                                 %line 175+0 nm.asm
+   263 00000223 48C7C6[00000000]        mov rsi, EMsgFewArgs
+   264 0000022A 48C7C702000000          mov rdi, SYS_stderr
+   265 00000231 E836000000              call print
+   266 00000236 48C7C702000000          mov rdi, 2
+   267 0000023D EB1A                    jmp _start_end
+   268                                 %line 176+1 nm.asm
+   269                                 _start_err_lot_args:
+   270                                 %line 176+0 nm.asm
+   271 0000023F 48C7C6[00000000]        mov rsi, EMsgLotArgs
+   272 00000246 48C7C702000000          mov rdi, SYS_stderr
+   273 0000024D E81A000000              call print
+   274 00000252 48C7C701000000          mov rdi, 1
+   275 00000259 EBFE                    jmp _start_end
+   276                                 %line 177+1 nm.asm
+   277                                 _start_end:
+   278 0000025B 415F                    pop r15
+   279 0000025D 415E                    pop r14
+   280 0000025F 415D                    pop r13
+   281 00000261 415C                    pop r12
+   282 00000263 5B                      pop rbx
+   283 00000264 4889EC                  mov rsp, rbp
+   284 00000267 5D                      pop rbp
+   285                                 
+   286 00000268 48C7C03C000000          mov rax, SYS_exit
+   287 0000026F 0F05                    syscall
+   288                                 
+   289                                 
+   290                                 print:
+   291                                 
+   292                                 
+   293                                 
+   294                                 
+   295                                 
+   296                                 
+   297                                 
+   298                                 
+   299 00000271 4883FF00                cmp rdi, 0
+   300 00000275 7421                    jz print_end
+   301 00000277 4883FE00                cmp rsi, 0
+   302 0000027B 741B                    jz print_end
+   303                                 
+   304                                 
+   305 0000027D 4989F2                  mov r10, rsi
+   306                                 print_strlen_loop:
+   307 00000280 41803A00                cmp BYTE [r10], 0
+   308 00000284 7403                    jz print_strlen_loop_end
+   309 00000286 49FFC2                  inc r10
+   310 00000289 EBF3                    jmp print_strlen_loop
+   311                                 print_strlen_loop_end:
+   312 0000028B 4C89D2                  mov rdx, r10
+   313 0000028E 4829F2                  sub rdx, rsi
+   314                                 
+   315                                 
+   316 00000291 48C7C001000000          mov rax, SYS_write
+   317 00000298 0F05                    syscall
+   318                                 print_end:
+   319 0000029A C3                     ret
+   320                                 
+   321                                 
+   322                                 readbuf:
+   323                                 
+   324                                 
+   325                                 
+   326                                 
+   327                                 
+   328 0000029B 48C7C280000000          mov rdx, RdBufSz
+   329 000002A2 48C7C6[00000000]        mov rsi, RdBuf
+   330 000002A9 488B3C25[00000000]      mov rdi, QWORD [RdFiDes]
+   331 000002B1 48C7C000000000          mov rax, SYS_read
+   332 000002B8 0F05                    syscall
+   333 000002BA 4883F800                cmp rax, 0
+   334 000002BE 7C18                    jl readbuf_end
+   335 000002C0 49C7C2[00000000]        mov r10, RdBuf
+   336 000002C7 4C891425[00000000]      mov QWORD [RdItr], r10
+   337 000002CF 4901C2                  add r10, rax
+   338 000002D2 4C891425[00000000]      mov QWORD [RdEnd], r10
+   339                                 readbuf_end:
+   340 000002DA C3                     ret
+   341                                 
+   342                                 
+   343                                 writebuf:
+   344                                 
+   345                                 
+   346                                 
+   347                                 
+   348                                 
+   349 000002DB 488B1425[00000000]      mov rdx, QWORD [WrItr]
+   350 000002E3 4881EA[00000000]        sub rdx, WrBuf
+   351 000002EA 48C7C6[00000000]        mov rsi, WrBuf
+   352 000002F1 488B3C25[00000000]      mov rdi, QWORD [WrFiDes]
+   353 000002F9 48C7C001000000          mov rax, SYS_write
+   354 00000300 0F05                    syscall
+   355 00000302 4883F800                cmp rax, 0
+   356 00000306 7C0D                    jl writebuf_end
+   357 00000308 49C7C2[00000000]        mov r10, WrBuf
+   358 0000030F 4C891425[00000000]      mov QWORD [WrItr], r10
+   359                                 writebuf_end:
+   360 00000317 C3                     ret
+   361                                 
+   362                                 
+   363                                 itos:
+   364                                 
+   365                                 
+   366                                 
+   367                                 
+   368                                 
+   369                                 
+   370                                 
+   371 00000318 53                      push rbx
+   372 00000319 4154                    push r12
+   373 0000031B 4155                    push r13
+   374                                 
+   375                                 
+   376 0000031D 4889F8                  mov rax, rdi
+   377 00000320 4883FF00                cmp rdi, 0
+   378 00000324 746D                    jz itos_end
+   379                                 
+   380 00000326 4883FE00                cmp rsi, 0
+   381 0000032A 7467                    jz itos_end
+   382                                 
+   383                                 
+   384 0000032C 4889D0                  mov rax, rdx
+   385 0000032F 48C7C30A000000          mov rbx, 10
+   386 00000336 49C7C400000000          mov r12, 0
+   387 0000033D 49C7C500000000          mov r13, 0
+   388 00000344 4883F800                cmp rax, 0
+   389 00000348 7D0B                    jge itos_digit_push_loop
+   390 0000034A 49C7C401000000          mov r12, 1
+   391 00000351 49FFC5                  inc r13
+   392 00000354 48F7D8                  neg rax
+   393                                 itos_digit_push_loop:
+   394 00000357 4939F5                  cmp r13, rsi
+   395 0000035A 7414                    je itos_digit_push_loop_end
+   396 0000035C 4831D2                  xor rdx, rdx
+   397 0000035F 48F7F3                  div rbx
+   398 00000362 4883C230                add rdx, 0x30
+   399 00000366 52                      push rdx
+   400 00000367 49FFC5                  inc r13
+   401 0000036A 4883F800                cmp rax, 0
+   402 0000036E 7400                    je itos_digit_push_loop_end
+   403 00000370 EBE3                    jmp itos_digit_push_loop
+   404                                 itos_digit_push_loop_end:
+   405 00000372 4983FC01                cmp r12, 1
+   406 00000376 7508                    jne itos_digit_pop_loop
+   407 00000378 48C7C300000000          mov rbx, 0
+   408 0000037F B32D                    mov bl, "-"
+   409 00000381 53                      push rbx
+   410                                 itos_digit_pop_loop:
+   411 00000382 4983FD00                cmp r13, 0
+   412 00000386 740B                    je itos_end
+   413 00000388 415C                    pop r12
+   414 0000038A 448827                  mov BYTE [rdi], r12b
+   415 0000038D 48FFC7                  inc rdi
+   416 00000390 49FFCD                  dec r13
+   417 00000393 EBEB                    jmp itos_digit_pop_loop
+   418                                 itos_end:
+   419 00000395 4889F8                  mov rax, rdi
+   420 00000398 415D                    pop r13
+   421 0000039A 415C                    pop r12
+   422 0000039C 5B                      pop rbx
+   423 0000039D C3                     ret
