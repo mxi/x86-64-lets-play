@@ -1,0 +1,36 @@
+1)	[x] They are the same. [parallel processing is a subset
+	of concurrency where two processes are genuinely acting
+	in parallel as opposed to interleaving.]
+
+2)	Distributed computing; multiprocessing/multithreading.
+
+3)	On a subservient machine.
+
+4)	Folding@home - protein folding and other atomical
+	simulations that contribute to science.
+
+	Bitcoin - proof of work based currency relying on 
+	distributed hashing to validate transactions.
+
+5)	On the different cores of a single processor.
+
+6)	Advantage: no limit to the number of computation units.
+	Disadvantage: communication instability/unreliability.
+
+7)	Advantage: tightly coupled shared storage.
+	Disadvantage: limited by the number of processors.
+
+8)	When two processes working in parallel access the same
+	location of storage where at least one write is involved,
+	i.e., at leasts one thread writes to the location and
+	the other one either overwrites it or reads a corrupted
+	result.
+
+9)	No, reading does not modify the value at an address,
+	therefore all reads will yield the correct value for
+	all threads.
+
+10)	Yes, writing modifies the value at an address and
+	unsynchronized threads may overlap in their execution,
+	resulting in one thread missing the necessary results of
+	another thread's computation.
