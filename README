@@ -36,12 +36,12 @@ Outline & Notable Files
 	- stoi.asm: string to integer conversion
 - ch11: macros
 	- itos.asm: integer to string macro
-	- stats.asm: int array statistics macro (min, max, sum, avg, etc.)
+	- stats.asm: int array statistics macro (min, max, sum, etc.)
 - ch12: functions
 	- bubsort.asm: 64-bit int array bubble sort function
 	- itosd.asm: delimited int to string function
 	- nisqrt.asm: nearest int sqrt function
-	- stats.asm: int array statistics function (with variance, stdev)
+	- stats.asm: int array statistics function (with var, stdev)
 	- stoid.asm: delimited string to int function
 	- strlend.asm: delimited string length function
 - ch13: system services
@@ -53,16 +53,17 @@ Outline & Notable Files
 - ch14: multiple source files
 	- freadline.asm: read a line from an open file handle
 	- ovstat.asm: overly complicated stat function to exercise 
-	              reasoning of parameters, local variables, and local
-				  arrays in x86-64.
+	              reasoning of parameters, local variables, and 
+	              local arrays in x86-64.
 - ch15: stack buffer overlow
 	- malicious.asm: injected into unsafe program input
 	- unsafe.asm: program with user input not checking bounds
-		- This was intended to demonstrate how malicious input can 
-		  spawn a new process with `execv,' but it appears the NOP
-		  slide is tedious to get working correctly and having correct
-		  alignment to override the $rip in the call stack, so I left
-		  it segfaulting for demonstration.
+		- This was intended to demonstrate how malicious input 
+		  can spawn a new process with `execv,' but it appears 
+		  the NOP slide is tedious to get working correctly and 
+		  having correct alignment to override the $rip in the 
+		  call stack, so I left it segfaulting for 
+		  demonstration.
 	- canary.asm: program with user input and stack protection
 - ch16: command-line arguments
 	- echo.asm: prints arguments on each line (including args[0])
@@ -70,6 +71,11 @@ Outline & Notable Files
 	- lsum.asm: sums a list of numbers from the command-line
 - ch17: input/output buffering
 	- nm.asm: bootleg version of GNU `nl`
+- ch18: floating-point instructions
+	- abs.asm: computes the absolute value of an f32/f64 using
+	           bit manipulation on IEEE-754 numbers.
+	- p1sum.asm: demonstrating floating point inaccuracies
+	- statsf.asm: compute floating point sum, avg
 
 Notes
 -----------------------------------------------------------------------
