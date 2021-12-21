@@ -1,0 +1,11 @@
+1)	xmm[0-15]
+
+2)	32-bit, 64-bit; but XMM registers are 128-bit wide.
+
+3)	Because 0.1 doesn't have an exact representation in base-2
+	floating points, the approximation carries the error and 
+	does not result in an accurate sum to 1.0.
+
+4)	xmm0
+
+5)	None.
