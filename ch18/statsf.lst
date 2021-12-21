@@ -1,0 +1,110 @@
+     1                                 %line 3+1 constants.asm
+     2                                 [section .rodata]
+     3                                 
+     4                                  LF equ 0x0a
+     5                                 
+     6                                 
+     7                                  SYS_read equ 0
+     8                                  SYS_write equ 1
+     9                                  SYS_open equ 2
+    10                                  SYS_close equ 3
+    11                                  SYS_lseek equ 8
+    12                                  SYS_exit equ 60
+    13                                 
+    14                                 
+    15                                  SYS_stdin equ 0
+    16                                  SYS_stdout equ 1
+    17                                  SYS_stderr equ 2
+    18                                 
+    19                                 
+    20                                  O_ACCMODE equ 00000003
+    21                                  O_RDONLY equ 00000000
+    22                                  O_WRONLY equ 00000001
+    23                                  O_RDWR equ 00000002
+    24                                  O_CREAT equ 00000100
+    25                                  O_EXCL equ 00000200
+    26                                  O_NOCTTY equ 00000400
+    27                                  O_TRUNC equ 00001000
+    28                                  O_APPEND equ 00002000
+    29                                  O_NONBLOCK equ 00004000
+    30                                  O_DSYNC equ 00010000
+    31                                  FASYNC equ 00020000
+    32                                  O_DIRECT equ 00040000
+    33                                  O_LARGEFILE equ 00100000
+    34                                  O_DIRECTORY equ 00200000
+    35                                  O_NOFOLLOW equ 00400000
+    36                                  O_NOATIME equ 01000000
+    37                                  O_CLOEXEC equ 02000000
+    38                                 
+    39                                  S_IRWXU equ 00700
+    40                                  S_IRUSR equ 00400
+    41                                  S_IWUSR equ 00200
+    42                                  S_IXUSR equ 00100
+    43                                 
+    44                                  S_IRWXG equ 00070
+    45                                  S_IRGRP equ 00040
+    46                                  S_IWGRP equ 00020
+    47                                  S_IXGRP equ 00010
+    48                                 
+    49                                  S_IRWXO equ 00007
+    50                                  S_IROTH equ 00004
+    51                                  S_IWOTH equ 00002
+    52                                  S_IXOTH equ 00001
+    53                                 
+    54                                 
+    55                                  SEEK_SET equ 0
+    56                                  SEEK_CUR equ 1
+    57                                  SEEK_END equ 2
+    58                                 
+    59                                 
+    60                                  EXIT_success equ 0
+    61                                  EXIT_failure equ 1
+    62                                 %line 2+1 statsf.asm
+    63                                 
+    64                                 [section .rodata]
+    65 00000000 0647893ECE8DD93EBD-     Arr dd 0.26812, 0.42491,-0.96574,-0.06330, 0.10227,
+    66 00000000 3A77BF6EA381BDEF72-
+    67 00000000 D13D               
+    68 00000014 7EC635BF573E6B3E3E-     dd -0.71006, 0.22973,-0.43017, 0.64855,-0.10180,
+    69 00000014 3FDCBE5F07263F857C-
+    70 00000014 D0BD               
+    71 00000028 ECFA3DBFB1C4A3BE42-     dd -0.74211,-0.31986,-0.21803, 0.91779, 0.41166,
+    72 00000028 435FBE49F46A3F19C5-
+    73 00000028 D23E               
+    74 0000003C CBF8173FF9664B3F82-     dd 0.59364, 0.79454,-0.07162, 0.65202,-0.95068,
+    75 0000003C AD92BDC8EA263FC45F-
+    76 0000003C 73BF               
+    77 00000050 49682B3FEE5A1ABFD2-     dd 0.66956,-0.60295,-0.89491, 0.35515,-0.32726,
+    78 00000050 1865BF39D6B53E9F8E-
+    79 00000050 A7BE               
+    80                                 
+    81 00000064 00000000                Zro dd 0.0
+    82 00000068 19000000                Len dd 25
+    83                                 
+    84                                 [section .bss]
+    85 00000000 <gap>                   Sum resd 1
+    86 00000004 <gap>                   Avg resd 1
+    87                                 
+    88                                 [section .text]
+    89                                 [global _start]
+    90                                 _start:
+    91                                 
+    92 00000000 F30F100425[00000000]      movss xmm0, DWORD [Zro]
+    93 00000009 8B0C25[00000000]        mov ecx, DWORD [Len]
+    94 00000010 BA00000000              mov edx, 0
+    95                                 _start_sum_loop:
+    96 00000015 67F30F580495[000000-     addss xmm0, DWORD [Arr+edx*4]
+    97 00000015 00]                
+    98 0000001F FFC2                    inc edx
+    99 00000021 E2F0                    loop _start_sum_loop
+   100 00000023 F30F110425[00000000]      movss DWORD [Sum], xmm0
+   101                                 
+   102                                 
+   103 0000002C F30F2A0C25[00000000]      cvtsi2ss xmm1, DWORD [Len]
+   104 00000035 F30F5EC1                divss xmm0, xmm1
+   105 00000039 F30F110425[00000000]      movss DWORD [Avg], xmm0
+   106                                 
+   107                                 
+   108 00000042 48C7C700000000          mov rdi, EXIT_success
+   109 00000049 48C7C03C000000          mov rax, SYS_exit
+   110 00000050 0F05                    syscall
