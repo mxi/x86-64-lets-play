@@ -82,6 +82,7 @@ Outline & Notable Files
 	- racejoined.asm: (correct) sum across joined threads
 	- racelocal.asm: (correct) sum accross threads with local
 	                 accumulator.
+- ch20: interrupts
 
 Notes
 -----------------------------------------------------------------------
