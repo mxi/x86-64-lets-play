@@ -1,0 +1,297 @@
+     1                                 %line 3+1 constants.asm
+     2                                 [section .rodata]
+     3                                 
+     4                                  NULL equ 0
+     5                                  LF equ 0x0a
+     6                                 
+     7                                 
+     8                                  SYS_read equ 0
+     9                                  SYS_write equ 1
+    10                                  SYS_open equ 2
+    11                                  SYS_close equ 3
+    12                                  SYS_lseek equ 8
+    13                                  SYS_exit equ 60
+    14                                 
+    15                                 
+    16                                  SYS_stdin equ 0
+    17                                  SYS_stdout equ 1
+    18                                  SYS_stderr equ 2
+    19                                 
+    20                                 
+    21                                  O_ACCMODE equ 00000003
+    22                                  O_RDONLY equ 00000000
+    23                                  O_WRONLY equ 00000001
+    24                                  O_RDWR equ 00000002
+    25                                  O_CREAT equ 00000100
+    26                                  O_EXCL equ 00000200
+    27                                  O_NOCTTY equ 00000400
+    28                                  O_TRUNC equ 00001000
+    29                                  O_APPEND equ 00002000
+    30                                  O_NONBLOCK equ 00004000
+    31                                  O_DSYNC equ 00010000
+    32                                  FASYNC equ 00020000
+    33                                  O_DIRECT equ 00040000
+    34                                  O_LARGEFILE equ 00100000
+    35                                  O_DIRECTORY equ 00200000
+    36                                  O_NOFOLLOW equ 00400000
+    37                                  O_NOATIME equ 01000000
+    38                                  O_CLOEXEC equ 02000000
+    39                                 
+    40                                  S_IRWXU equ 00700
+    41                                  S_IRUSR equ 00400
+    42                                  S_IWUSR equ 00200
+    43                                  S_IXUSR equ 00100
+    44                                 
+    45                                  S_IRWXG equ 00070
+    46                                  S_IRGRP equ 00040
+    47                                  S_IWGRP equ 00020
+    48                                  S_IXGRP equ 00010
+    49                                 
+    50                                  S_IRWXO equ 00007
+    51                                  S_IROTH equ 00004
+    52                                  S_IWOTH equ 00002
+    53                                  S_IXOTH equ 00001
+    54                                 
+    55                                 
+    56                                  SEEK_SET equ 0
+    57                                  SEEK_CUR equ 1
+    58                                  SEEK_END equ 2
+    59                                 
+    60                                 
+    61                                  EXIT_success equ 0
+    62                                  EXIT_failure equ 1
+    63                                 %line 1+1 itosd_only.asm
+    64                                 [section .text]
+    65                                 [global itosd]
+    66                                 itosd:
+    67                                 
+    68                                 
+    69                                 
+    70                                 
+    71                                 
+    72                                 
+    73                                 
+    74                                 
+    75 00000000 53                      push rbx
+    76 00000001 4154                    push r12
+    77                                 
+    78                                 
+    79 00000003 48C7C000000000          mov rax, 0
+    80 0000000A 4883FE00                cmp rsi, 0
+    81 0000000E 0F848B000000            jz itosd_end
+    82                                 
+    83 00000014 4883FA00                cmp rdx, 0
+    84 00000018 0F8481000000            jz itosd_end
+    85                                 
+    86                                 
+    87 0000001E 4989D4                  mov r12, rdx
+    88 00000021 48C7C30A000000          mov rbx, 10
+    89 00000028 49C7C200000000          mov r10, 0
+    90 0000002F 49C7C300000000          mov r11, 0
+    91 00000036 4889F8                  mov rax, rdi
+    92 00000039 4883F800                cmp rax, 0
+    93 0000003D 7D08                    jge itosd_push_loop
+    94 0000003F 49C7C201000000          mov r10, 1
+    95 00000046 48F7D8                  neg rax
+    96                                 itosd_push_loop:
+    97 00000049 4899                    cqo
+    98 0000004B 48F7F3                  div rbx
+    99 0000004E 52                      push rdx
+   100 0000004F 49FFC3                  inc r11
+   101 00000052 4883F800                cmp rax, 0
+   102 00000056 77EF                    ja itosd_push_loop
+   103 00000058 4C89E2                  mov rdx, r12
+   104                                 
+   105                                 
+   106 0000005B 4889F0                  mov rax, rsi
+   107 0000005E 4983FA00                cmp r10, 0
+   108 00000062 7411                    je itosd_pop_loop_prepare
+   109 00000064 49C7C400000000          mov r12, 0
+   110 0000006B 41B42D                  mov r12b, "-"
+   111 0000006E 4983EC30                sub r12, "0"
+   112 00000072 4154                    push r12
+   113 00000074 49FFC3                  inc r11
+   114                                 itosd_pop_loop_prepare:
+   115 00000077 4939D3                  cmp r11, rdx
+   116 0000007A 720E                    jb itosd_pop_loop
+   117                                 itosd_digit_overflow:
+   118 0000007C 4D89DC                  mov r12, r11
+   119 0000007F 4929D4                  sub r12, rdx
+   120 00000082 49FFC4                  inc r12
+   121 00000085 4A8D24E4                lea rsp, [rsp+r12*8]
+   122 00000089 4D29E3                  sub r11, r12
+   123                                 itosd_pop_loop:
+   124 0000008C 4983FB00                cmp r11, 0
+   125 00000090 740F                    je itosd_pop_loop_end
+   126 00000092 415C                    pop r12
+   127 00000094 4983C430                add r12, "0"
+   128 00000098 448820                  mov BYTE [rax], r12b
+   129 0000009B 48FFC0                  inc rax
+   130 0000009E 49FFCB                  dec r11
+   131 000000A1 EBE7                    jmp itosd_pop_loop
+   132                                 itosd_pop_loop_end:
+   133 000000A3 8808                    mov BYTE [rax], cl
+   134                                 itosd_end:
+   135 000000A5 415C                    pop r12
+   136 000000A7 5B                      pop rbx
+   137 000000A8 C3                     ret
+   138                                 %line 2+1 printline_only.asm
+   139                                 
+   140                                 [section .rodata]
+   141 00000000 0A                      LFc db LF
+   142                                 
+   143                                 [section .text]
+   144                                 [global printline]
+   145                                 printline:
+   146                                 
+   147                                 
+   148                                 
+   149                                 
+   150                                 
+   151                                 
+   152                                 
+   153 000000A9 4883FF00                cmp rdi, 0
+   154 000000AD 7442                    jz printline_end
+   155                                 
+   156                                 
+   157 000000AF 4889FE                  mov rsi, rdi
+   158                                 printline_strlen_loop:
+   159 000000B2 803E00                  cmp BYTE [rsi], 0
+   160 000000B5 7403                    jz printline_strlen_loop_end
+   161 000000B7 48FFC6                  inc rsi
+   162 000000BA EBF4                    jmp printline_strlen_loop
+   163                                 printline_strlen_loop_end:
+   164                                 
+   165 000000BC 4889F2                  mov rdx, rsi
+   166 000000BF 4829FA                  sub rdx, rdi
+   167 000000C2 4889FE                  mov rsi, rdi
+   168 000000C5 48C7C701000000          mov rdi, SYS_stdout
+   169 000000CC 48C7C001000000          mov rax, SYS_write
+   170 000000D3 0F05                    syscall
+   171                                 
+   172 000000D5 48C7C201000000          mov rdx, 1
+   173 000000DC 48C7C6[00000000]        mov rsi, LFc
+   174 000000E3 48C7C701000000          mov rdi, SYS_stdout
+   175 000000EA 48C7C001000000          mov rax, SYS_write
+   176 000000F1 0F05                    syscall
+   177                                 printline_end:
+   178 000000F3 C3                     ret
+   179                                 %line 4+1 racelocal.asm
+   180                                 
+   181                                 [section .data]
+   182                                  NTH equ 2
+   183                                  MAX equ 1000000000
+   184                                  ValBufSz equ 64
+   185 00000000 0000000000000000        Val dq 0
+   186 00000008 0100000000000000        X dq 1
+   187 00000010 0100000000000000        Y dq 1
+   188                                 
+   189                                 [section .bss]
+   190 00000000 0200000000000000        ThrIds dq NTH
+   191 00000008 40                      ValBuf db ValBufSz
+   192                                 
+   193                                 [section .text]
+   194                                 [extern pthread_create]
+   195                                 [extern pthread_join]
+   196                                 [global main]
+   197                                 main:
+   198 000000F4 55                      push rbp
+   199 000000F5 4889E5                  mov rbp, rsp
+   200 000000F8 4154                    push r12
+   201 000000FA 4155                    push r13
+   202                                 
+   203                                 
+   204 000000FC 49C7C400000000          mov r12, 0
+   205                                 main_spawn_thread_loop:
+   206 00000103 4983FC02                cmp r12, NTH
+   207 00000107 7425                    je main_spawn_thread_loop_end
+   208                                 
+   209 00000109 48C7C100000000          mov rcx, NULL
+   210 00000110 48C7C2[00000000]        mov rdx, thread_func
+   211 00000117 48C7C600000000          mov rsi, NULL
+   212 0000011E 4A8D3CE5[00000000]      lea rdi, QWORD [ThrIds+r12*8]
+   213 00000126 E8(F6FFFFFF)            call pthread_create
+   214                                 
+   215                                 
+   216                                 
+   217                                 
+   218 0000012B 49FFC4                  inc r12
+   219 0000012E EBD1                    jmp main_spawn_thread_loop
+   220                                 main_spawn_thread_loop_end:
+   221                                 
+   222                                 
+   223 00000130 49C7C400000000          mov r12, 0
+   224                                 main_join_loop:
+   225 00000137 4983FC02                cmp r12, NTH
+   226 0000013B 7417                    je main_join_loop_end
+   227 0000013D 48C7C600000000          mov rsi, NULL
+   228 00000144 4A8B3CE5[00000000]      mov rdi, QWORD [ThrIds+r12*8]
+   229 0000014C E8(F6FFFFFF)            call pthread_join
+   230 00000151 49FFC4                  inc r12
+   231 00000154 EBDF                    jmp main_join_loop
+   232                                 main_join_loop_end:
+   233                                 
+   234                                 
+   235 00000156 B100                    mov cl, NULL
+   236 00000158 48C7C240000000          mov rdx, ValBufSz
+   237 0000015F 48C7C6[00000000]        mov rsi, ValBuf
+   238 00000166 488B3C25[00000000]      mov rdi, QWORD [Val]
+   239 0000016E E888FEFFFF              call itosd
+   240                                 
+   241 00000173 48C7C7[00000000]        mov rdi, ValBuf
+   242 0000017A E825FFFFFF              call printline
+   243                                 
+   244                                 
+   245 0000017F 48C7C700000000          mov rdi, EXIT_success
+   246 00000186 48C7C03C000000          mov rax, SYS_exit
+   247 0000018D 0F05                    syscall
+   248                                 main_end:
+   249 0000018F 415D                    pop r13
+   250 00000191 415C                    pop r12
+   251 00000193 4889EC                  mov rsp, rbp
+   252 00000196 5D                      pop rbp
+   253 00000197 C3                     ret
+   254                                 
+   255                                 
+   256                                 
+   257                                 
+   258                                 
+   259                                 
+   260                                 
+   261                                 
+   262                                 
+   263                                 
+   264                                 
+   265                                 
+   266                                 
+   267                                 
+   268                                 
+   269                                 
+   270                                 
+   271                                 
+   272                                 
+   273                                 
+   274                                 
+   275                                 thread_func:
+   276 00000198 53                      push rbx
+   277 00000199 4154                    push r12
+   278 0000019B 4155                    push r13
+   279 0000019D 48C7C000CA9A3B          mov rax, MAX
+   280 000001A4 48C7C302000000          mov rbx, NTH
+   281 000001AB 4899                    cqo
+   282 000001AD 48F7F3                  div rbx
+   283 000001B0 4889C1                  mov rcx, rax
+   284 000001B3 4C8B2425[00000000]      mov r12, QWORD [X]
+   285 000001BB 4C8B2C25[00000000]      mov r13, QWORD [Y]
+   286 000001C3 48C7C000000000          mov rax, 0
+   287                                 thread_sum_loop:
+   288 000001CA 4899                    cqo
+   289 000001CC 49F7F4                  div r12
+   290 000001CF 4C01E8                  add rax, r13
+   291 000001D2 E2F4                    loop thread_sum_loop
+   292 000001D4 F048010425[00000000]      lock add QWORD [Val], rax
+   293                                 thread_func_end:
+   294 000001DD 415D                    pop r13
+   295 000001DF 415C                    pop r12
+   296 000001E1 5B                      pop rbx
+   297 000001E2 C3                     ret

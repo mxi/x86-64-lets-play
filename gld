@@ -4,4 +4,4 @@ FILE=${1:?"Source file required: ./gdl FILE"}
 ROOT=$(echo $FILE | sed 's/\.\w*$//g')
 
 yasm -g dwarf2 -f elf64 -l "$ROOT.lst" -o "$ROOT.o" "$FILE"
-gcc -g -no-pie -o "$ROOT" -lpthread "$ROOT.o"
+gcc -g -no-pie -o "$ROOT" -pthread "$ROOT.o"
