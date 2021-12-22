@@ -76,6 +76,12 @@ Outline & Notable Files
 	           bit manipulation on IEEE-754 numbers.
 	- p1sum.asm: demonstrating floating point inaccuracies
 	- statsf.asm: compute floating point sum, avg
+- ch19: parallel processing
+	- raceglobal.asm: (incorrect) sum accross threads with global 
+	                  variable
+	- racejoined.asm: (correct) sum across joined threads
+	- racelocal.asm: (correct) sum accross threads with local
+	                 accumulator.
 
 Notes
 -----------------------------------------------------------------------
