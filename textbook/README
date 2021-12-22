@@ -1,0 +1,91 @@
+This direectory contains my personal solutions to some exercise quizzes 
+and problems from "x86-64 Assembly Language Programming with Ubuntu 
+(January 2020)" by Ed Jorgensen.
+
+I added or changed some "suggested projects" to suit my own interests
+but still kept the spirit of conceptual understanding within those
+changes.
+
+Even though the text is titled "with Ubuntu," I was able to use Arch 
+Linux just fine.
+
+I believe this text is freely available at 
+http://www.egr.unlv.edu/~ed/assembly64.pdf
+
+Outline & Notable Files
+-----------------------------------------------------------------------
+- asm: the assmebler/linker script using YASM and ld as is
+- gld: the assembler/linker script using YASM and GCC for linking
+- ch01: introduction
+- ch02: architecture overview
+- ch03: data representation (int, float)
+- ch04: program format (asm syntax, sections)
+- ch05: toolchain (yasm, ld, gdb)
+- ch06: ddd debugger (I opted for terminal gdb)
+	- prog.asm: simple arithmetic, how to use gdb
+- ch07: instruction set overview (mov, add, mul, div, etc.)
+	- fib.asm: computes the Nth fibonacci number
+	- sqofsum.asm: computes the square of a sum of a list
+- ch08: addressing modes[1]
+	- bubsort.asm: bubble sort of a 64-bit int array
+	- listsum.asm: computes the sum of a 64-bit int array
+	- sqrt.asm: computes 64-bit int sqrt of each array element
+- ch09: process stack
+	- palin.asm: checks whether a phrase is a palindrome
+	- reverse.asm: reverses a 64-bit int array
+- ch10: program development
+	- itos.asm: integer to string conversion
+	- stoi.asm: string to integer conversion
+- ch11: macros
+	- itos.asm: integer to string macro
+	- stats.asm: int array statistics macro (min, max, sum, etc.)
+- ch12: functions
+	- bubsort.asm: 64-bit int array bubble sort function
+	- itosd.asm: delimited int to string function
+	- nisqrt.asm: nearest int sqrt function
+	- stats.asm: int array statistics function (with var, stdev)
+	- stoid.asm: delimited string to int function
+	- strlend.asm: delimited string length function
+- ch13: system services
+	- constants.asm: linux system call codes and other constants
+	- fdump.asm: dump string buffer into file
+	- fload.asm: load file into string buffer
+	- printline.asm: print a null terminated string to stdout
+	- readline.asm: read a null terminated string from stdin
+- ch14: multiple source files
+	- freadline.asm: read a line from an open file handle
+	- ovstat.asm: overly complicated stat function to exercise 
+	              reasoning of parameters, local variables, and 
+	              local arrays in x86-64.
+- ch15: stack buffer overlow
+	- malicious.asm: injected into unsafe program input
+	- unsafe.asm: program with user input not checking bounds
+		- This was intended to demonstrate how malicious input 
+		  can spawn a new process with `execv,' but it appears 
+		  the NOP slide is tedious to get working correctly and 
+		  having correct alignment to override the $rip in the 
+		  call stack, so I left it segfaulting for 
+		  demonstration.
+	- canary.asm: program with user input and stack protection
+- ch16: command-line arguments
+	- echo.asm: prints arguments on each line (including args[0])
+	- cat.asm: prints contents of file specified on command-line
+	- lsum.asm: sums a list of numbers from the command-line
+- ch17: input/output buffering
+	- nm.asm: bootleg version of GNU `nl`
+- ch18: floating-point instructions
+	- abs.asm: computes the absolute value of an f32/f64 using
+	           bit manipulation on IEEE-754 numbers.
+	- p1sum.asm: demonstrating floating point inaccuracies
+	- statsf.asm: compute floating point sum, avg
+- ch19: parallel processing
+	- raceglobal.asm: (incorrect) sum accross threads with global 
+	                  variable
+	- racejoined.asm: (correct) sum across joined threads
+	- racelocal.asm: (correct) sum accross threads with local
+	                 accumulator.
+- ch20: interrupts
+
+Notes
+-----------------------------------------------------------------------
+[1] ModR/M and SIB are not explicitly covered here.
