@@ -82,7 +82,7 @@ example, here is the x86-64 encoding of $eax vs. $esp memory
 addressing:
 
 	LINE	HEX		ASSEMBLY
-	------------------------------
+	--------------------------------------
 	1	8B00		mov eax, [eax]
 	2	8B0424		mov eax, [esp]
 
