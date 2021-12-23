@@ -1,0 +1,507 @@
+
+ovstat:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000401000 <strlend>:
+  401000:	mov    rax,0x0
+  401007:	mov    r10,rsi
+  40100a:	cmp    rsi,0x0
+  40100e:	je     40102c <strlend_finish>
+  401010:	cmp    rdx,0x0
+  401014:	je     40102c <strlend_finish>
+
+0000000000401016 <strlend_loop>:
+  401016:	cmp    BYTE PTR [r10],0x0
+  40101a:	je     401026 <strlend_loop_end>
+  40101c:	cmp    BYTE PTR [r10],cl
+  40101f:	je     401026 <strlend_loop_end>
+  401021:	inc    r10
+  401024:	jmp    401016 <strlend_loop>
+
+0000000000401026 <strlend_loop_end>:
+  401026:	mov    rax,r10
+  401029:	sub    rax,rsi
+
+000000000040102c <strlend_finish>:
+  40102c:	cmp    rdi,0x0
+  401030:	je     401035 <strlend_end>
+  401032:	mov    QWORD PTR [rdi],r10
+
+0000000000401035 <strlend_end>:
+  401035:	ret    
+
+0000000000401036 <stoid>:
+  401036:	push   rbx
+  401037:	push   r12
+  401039:	push   r13
+  40103b:	mov    rax,0x0
+  401042:	cmp    rdi,0x0
+  401046:	je     4010f9 <stoid_end>
+  40104c:	cmp    rsi,0x0
+  401050:	je     4010f9 <stoid_end>
+  401056:	cmp    rdx,0x0
+  40105a:	je     4010f9 <stoid_end>
+  401060:	mov    QWORD PTR [rdi],0x0
+  401067:	mov    rax,rsi
+  40106a:	mov    r11,rax
+  40106d:	add    r11,rdx
+
+0000000000401070 <stoid_skip_space_loop>:
+  401070:	cmp    rax,r11
+  401073:	je     4010f9 <stoid_end>
+  401079:	cmp    BYTE PTR [rax],0x20
+  40107c:	jne    401083 <stoid_skip_space_loop_end>
+  40107e:	inc    rax
+  401081:	jmp    401070 <stoid_skip_space_loop>
+
+0000000000401083 <stoid_skip_space_loop_end>:
+  401083:	mov    r10,rax
+  401086:	mov    r12,0x1
+  40108d:	cmp    BYTE PTR [r10],0x2d
+  401091:	je     40109b <stoid_negative>
+  401093:	cmp    BYTE PTR [r10],0x2b
+  401097:	je     4010a2 <stoid_positive>
+  401099:	jmp    4010a5 <stoid_nosign>
+
+000000000040109b <stoid_negative>:
+  40109b:	mov    r12,0xffffffffffffffff
+
+00000000004010a2 <stoid_positive>:
+  4010a2:	inc    r10
+
+00000000004010a5 <stoid_nosign>:
+  4010a5:	mov    rbx,0xa
+  4010ac:	mov    rax,0x0
+  4010b3:	mov    r13,0x0
+
+00000000004010ba <stoid_digit_loop>:
+  4010ba:	cmp    r10,r11
+  4010bd:	je     4010ec <stoid_digit_loop_end>
+  4010bf:	mov    r13b,BYTE PTR [r10]
+  4010c2:	cmp    r13b,cl
+  4010c5:	je     4010ec <stoid_digit_loop_end>
+  4010c7:	sub    r13b,0x30
+  4010cb:	cmp    r13b,0x0
+  4010cf:	jl     4010e3 <stoid_digit_loop_end_invalid>
+  4010d1:	cmp    r13b,0x9
+  4010d5:	jg     4010e3 <stoid_digit_loop_end_invalid>
+  4010d7:	imul   rax,rbx
+  4010db:	add    rax,r13
+  4010de:	inc    r10
+  4010e1:	jmp    4010ba <stoid_digit_loop>
+
+00000000004010e3 <stoid_digit_loop_end_invalid>:
+  4010e3:	mov    rax,0x0
+  4010ea:	jmp    4010f9 <stoid_end>
+
+00000000004010ec <stoid_digit_loop_end>:
+  4010ec:	mov    r13,rax
+  4010ef:	imul   r13,r12
+  4010f3:	mov    QWORD PTR [rdi],r13
+  4010f6:	mov    rax,r10
+
+00000000004010f9 <stoid_end>:
+  4010f9:	pop    r13
+  4010fb:	pop    r12
+  4010fd:	pop    rbx
+  4010fe:	ret    
+
+00000000004010ff <bubsort>:
+  4010ff:	mov    rax,0x0
+  401106:	cmp    rdi,0x0
+  40110a:	je     401156 <bubsort_end>
+  40110c:	cmp    rsi,0x0
+  401110:	je     401156 <bubsort_end>
+  401112:	mov    rax,rdi
+  401115:	mov    rcx,rsi
+  401118:	dec    rcx
+
+000000000040111b <bubsort_pass_loop>:
+  40111b:	mov    r8,0x0
+  401122:	mov    rdi,0x0
+
+0000000000401129 <bubsort_swap_loop>:
+  401129:	cmp    rdi,rcx
+  40112c:	jae    40114e <bubsort_swap_loop_end>
+  40112e:	mov    r10,QWORD PTR [rax+rdi*8]
+  401132:	mov    r11,QWORD PTR [rax+rdi*8+0x8]
+  401137:	cmp    r10,r11
+  40113a:	jle    401149 <bubsort_noswap>
+  40113c:	mov    QWORD PTR [rax+rdi*8],r11
+  401140:	mov    QWORD PTR [rax+rdi*8+0x8],r10
+  401145:	or     r8,0x1
+
+0000000000401149 <bubsort_noswap>:
+  401149:	inc    rdi
+  40114c:	jmp    401129 <bubsort_swap_loop>
+
+000000000040114e <bubsort_swap_loop_end>:
+  40114e:	cmp    r8,0x0
+  401152:	je     401156 <bubsort_end>
+  401154:	loop   40111b <bubsort_pass_loop>
+
+0000000000401156 <bubsort_end>:
+  401156:	ret    
+
+0000000000401157 <nisqrt>:
+  401157:	push   rbx
+  401158:	mov    r10,0x0
+  40115f:	mov    r11,rdi
+  401162:	mov    rbx,r11
+
+0000000000401165 <nisqrt_bin_loop>:
+  401165:	mov    rax,r11
+  401168:	sub    rax,r10
+  40116b:	cmp    rax,0x1
+  40116f:	jbe    401190 <nisqrt_bin_loop_end>
+  401171:	shr    rax,1
+  401174:	add    rax,r10
+  401177:	mov    rbx,rax
+  40117a:	mul    rax
+  40117d:	cmp    rax,rdi
+  401180:	jb     401186 <nisqrt_too_low>
+  401182:	ja     40118b <nisqrt_too_high>
+  401184:	jmp    401190 <nisqrt_bin_loop_end>
+
+0000000000401186 <nisqrt_too_low>:
+  401186:	mov    r10,rbx
+  401189:	jmp    401165 <nisqrt_bin_loop>
+
+000000000040118b <nisqrt_too_high>:
+  40118b:	mov    r11,rbx
+  40118e:	jmp    401165 <nisqrt_bin_loop>
+
+0000000000401190 <nisqrt_bin_loop_end>:
+  401190:	mov    rax,rbx
+  401193:	mul    rax
+  401196:	cmp    rax,rdi
+  401199:	jb     40119f <nisqrt_test_incr_nearest>
+  40119b:	ja     4011c0 <nisqrt_test_decr_nearest>
+  40119d:	jmp    4011df <nisqrt_test_end>
+
+000000000040119f <nisqrt_test_incr_nearest>:
+  40119f:	mov    r10,rdi
+  4011a2:	sub    r10,rax
+  4011a5:	mov    rax,rbx
+  4011a8:	inc    rax
+  4011ab:	mul    rax
+  4011ae:	mov    r11,rax
+  4011b1:	sub    r11,rdi
+  4011b4:	cmp    r10,r11
+  4011b7:	ja     4011bb <nisqrt_test_accept_incr>
+  4011b9:	jmp    4011df <nisqrt_test_end>
+
+00000000004011bb <nisqrt_test_accept_incr>:
+  4011bb:	inc    rbx
+  4011be:	jmp    4011df <nisqrt_test_end>
+
+00000000004011c0 <nisqrt_test_decr_nearest>:
+  4011c0:	mov    r10,rax
+  4011c3:	sub    r10,rax
+  4011c6:	mov    rax,rbx
+  4011c9:	dec    rax
+  4011cc:	mul    rax
+  4011cf:	mov    r11,rdi
+  4011d2:	sub    r11,rax
+  4011d5:	cmp    r10,r11
+  4011d8:	ja     4011dc <nisqrt_test_accept_decr>
+  4011da:	jmp    4011df <nisqrt_test_end>
+
+00000000004011dc <nisqrt_test_accept_decr>:
+  4011dc:	dec    rbx
+
+00000000004011df <nisqrt_test_end>:
+  4011df:	mov    rax,rbx
+
+00000000004011e2 <nisqrt_end>:
+  4011e2:	pop    rbx
+  4011e3:	ret    
+
+00000000004011e4 <stats>:
+  4011e4:	push   rbp
+  4011e5:	mov    rbp,rsp
+  4011e8:	push   rbx
+  4011e9:	mov    rax,0x0
+  4011f0:	cmp    rdi,0x0
+  4011f4:	je     401311 <stats_end>
+  4011fa:	cmp    rsi,0x0
+  4011fe:	je     401311 <stats_end>
+  401204:	cmp    rdx,0x0
+  401208:	je     401311 <stats_end>
+  40120e:	cmp    rcx,0x0
+  401212:	je     401311 <stats_end>
+  401218:	cmp    r8,0x0
+  40121c:	je     401311 <stats_end>
+  401222:	cmp    r9,0x0
+  401226:	je     401311 <stats_end>
+  40122c:	cmp    QWORD PTR [rbp+0x10],0x0
+  401231:	je     401311 <stats_end>
+  401237:	cmp    QWORD PTR [rbp+0x18],0x0
+  40123c:	je     401311 <stats_end>
+  401242:	cmp    QWORD PTR [rbp+0x20],0x0
+  401247:	je     401311 <stats_end>
+  40124d:	cmp    QWORD PTR [rbp+0x28],0x0
+  401252:	je     401311 <stats_end>
+  401258:	mov    r10,QWORD PTR [rdi]
+  40125b:	mov    QWORD PTR [rdx],r10
+  40125e:	lea    r10,[rdi+rsi*8-0x8]
+  401263:	mov    r11,QWORD PTR [r10]
+  401266:	mov    QWORD PTR [r9],r11
+  401269:	mov    r10,rsi
+  40126c:	and    r10,0x1
+  401270:	jne    401289 <stats_med_odd>
+
+0000000000401272 <stats_med_even>:
+  401272:	mov    r10,rsi
+  401275:	shr    r10,1
+  401278:	mov    r11,QWORD PTR [rdi+r10*8-0x8]
+  40127d:	mov    QWORD PTR [rcx],r11
+  401280:	mov    r11,QWORD PTR [rdi+r10*8]
+  401284:	mov    QWORD PTR [r8],r11
+  401287:	jmp    401299 <stats_med_end>
+
+0000000000401289 <stats_med_odd>:
+  401289:	mov    r10,rsi
+  40128c:	shr    r10,1
+  40128f:	mov    r11,QWORD PTR [rdi+r10*8]
+  401293:	mov    QWORD PTR [rcx],r11
+  401296:	mov    QWORD PTR [r8],r11
+
+0000000000401299 <stats_med_end>:
+  401299:	mov    r10,0x0
+  4012a0:	mov    rax,0x0
+
+00000000004012a7 <stats_sum_loop>:
+  4012a7:	add    rax,QWORD PTR [rdi+r10*8]
+  4012ab:	inc    r10
+  4012ae:	cmp    r10,rsi
+  4012b1:	jb     4012a7 <stats_sum_loop>
+  4012b3:	mov    r11,QWORD PTR [rbp+0x10]
+  4012b7:	mov    QWORD PTR [r11],rax
+  4012ba:	push   rdx
+  4012bb:	cqo    
+  4012bd:	idiv   rsi
+  4012c0:	mov    r11,QWORD PTR [rbp+0x18]
+  4012c4:	mov    QWORD PTR [r11],rax
+  4012c7:	pop    rdx
+  4012c8:	push   rdx
+  4012c9:	mov    rbx,QWORD PTR [rbp+0x20]
+  4012cd:	mov    r10,0x0
+  4012d4:	mov    r11,rax
+
+00000000004012d7 <stats_var_loop>:
+  4012d7:	mov    rax,QWORD PTR [rdi+r10*8]
+  4012db:	sub    rax,r11
+  4012de:	imul   rax
+  4012e1:	add    QWORD PTR [rbx],rax
+  4012e4:	inc    r10
+  4012e7:	cmp    r10,rsi
+  4012ea:	jb     4012d7 <stats_var_loop>
+  4012ec:	mov    rax,QWORD PTR [rbx]
+  4012ef:	mov    rdx,0x0
+  4012f6:	div    rsi
+  4012f9:	mov    QWORD PTR [rbx],rax
+  4012fc:	pop    rdx
+  4012fd:	push   rdi
+  4012fe:	mov    rdi,rax
+  401301:	call   401157 <nisqrt>
+  401306:	mov    rbx,QWORD PTR [rbp+0x28]
+  40130a:	mov    QWORD PTR [rbx],rax
+  40130d:	pop    rdi
+  40130e:	mov    rax,rdi
+
+0000000000401311 <stats_end>:
+  401311:	pop    rbx
+  401312:	mov    rsp,rbp
+  401315:	pop    rbp
+  401316:	ret    
+
+0000000000401317 <itosd>:
+  401317:	push   rbx
+  401318:	push   r12
+  40131a:	mov    rax,0x0
+  401321:	cmp    rsi,0x0
+  401325:	je     4013bc <itosd_end>
+  40132b:	cmp    rdx,0x0
+  40132f:	je     4013bc <itosd_end>
+  401335:	mov    r12,rdx
+  401338:	mov    rbx,0xa
+  40133f:	mov    r10,0x0
+  401346:	mov    r11,0x0
+  40134d:	mov    rax,rdi
+  401350:	cmp    rax,0x0
+  401354:	jge    401360 <itosd_push_loop>
+  401356:	mov    r10,0x1
+  40135d:	neg    rax
+
+0000000000401360 <itosd_push_loop>:
+  401360:	cqo    
+  401362:	div    rbx
+  401365:	push   rdx
+  401366:	inc    r11
+  401369:	cmp    rax,0x0
+  40136d:	ja     401360 <itosd_push_loop>
+  40136f:	mov    rdx,r12
+  401372:	mov    rax,rsi
+  401375:	cmp    r10,0x0
+  401379:	je     40138e <itosd_pop_loop_prepare>
+  40137b:	mov    r12,0x0
+  401382:	mov    r12b,0x2d
+  401385:	sub    r12,0x30
+  401389:	push   r12
+  40138b:	inc    r11
+
+000000000040138e <itosd_pop_loop_prepare>:
+  40138e:	cmp    r11,rdx
+  401391:	jb     4013a3 <itosd_pop_loop>
+
+0000000000401393 <itosd_digit_overflow>:
+  401393:	mov    r12,r11
+  401396:	sub    r12,rdx
+  401399:	inc    r12
+  40139c:	lea    rsp,[rsp+r12*8]
+  4013a0:	sub    r11,r12
+
+00000000004013a3 <itosd_pop_loop>:
+  4013a3:	cmp    r11,0x0
+  4013a7:	je     4013ba <itosd_pop_loop_end>
+  4013a9:	pop    r12
+  4013ab:	add    r12,0x30
+  4013af:	mov    BYTE PTR [rax],r12b
+  4013b2:	inc    rax
+  4013b5:	dec    r11
+  4013b8:	jmp    4013a3 <itosd_pop_loop>
+
+00000000004013ba <itosd_pop_loop_end>:
+  4013ba:	mov    BYTE PTR [rax],cl
+
+00000000004013bc <itosd_end>:
+  4013bc:	pop    r12
+  4013be:	pop    rbx
+  4013bf:	ret    
+
+00000000004013c0 <ovstat>:
+  4013c0:	push   rbp
+  4013c1:	mov    rbp,rsp
+  4013c4:	sub    rsp,0x2050
+  4013cb:	push   rbx
+  4013cc:	push   r12
+  4013ce:	push   r13
+  4013d0:	mov    QWORD PTR [rbp-0x2018],rdi
+  4013d7:	mov    QWORD PTR [rbp-0x2020],rsi
+  4013de:	mov    QWORD PTR [rbp-0x2028],rdx
+  4013e5:	mov    QWORD PTR [rbp-0x2030],rcx
+  4013ec:	mov    QWORD PTR [rbp-0x2038],r8
+  4013f3:	mov    QWORD PTR [rbp-0x2040],r9
+  4013fa:	mov    rax,QWORD PTR [rbp+0x10]
+  4013fe:	mov    QWORD PTR [rbp-0x2048],rax
+  401405:	mov    rax,QWORD PTR [rbp+0x18]
+  401409:	mov    QWORD PTR [rbp-0x2050],rax
+  401410:	mov    rax,QWORD PTR [rbp+0x20]
+  401414:	mov    QWORD PTR [rbp-0x2058],rax
+  40141b:	mov    r12,QWORD PTR [rbp-0x2018]
+  401422:	lea    r13,[rbp-0x2000]
+
+0000000000401429 <ovstat_parse_loop>:
+  401429:	cmp    r13,rbp
+  40142c:	je     401484 <ovstat_parse_loop_done>
+  40142e:	mov    cl,0x2c
+  401430:	mov    rdx,0x80
+  401437:	mov    rsi,r12
+  40143a:	lea    rdi,[rbp-0x2008]
+  401441:	call   401000 <strlend>
+  401446:	cmp    rax,0x0
+  40144a:	je     401552 <ovstat_err>
+  401450:	mov    rbx,QWORD PTR [rbp-0x2008]
+  401457:	mov    cl,BYTE PTR [rbx]
+  401459:	mov    rdx,rax
+  40145c:	mov    rsi,r12
+  40145f:	mov    rdi,r13
+  401462:	call   401036 <stoid>
+  401467:	cmp    rax,0x0
+  40146b:	je     401552 <ovstat_err>
+  401471:	mov    r12,rax
+  401474:	cmp    BYTE PTR [r12],0x0
+  401479:	je     401484 <ovstat_parse_loop_done>
+  40147b:	inc    r12
+  40147e:	add    r13,0x8
+  401482:	jmp    401429 <ovstat_parse_loop>
+
+0000000000401484 <ovstat_parse_loop_done>:
+  401484:	lea    rbx,[rbp-0x2000]
+  40148b:	sub    r13,rbx
+  40148e:	shr    r13,0x3
+  401492:	mov    QWORD PTR [rbp-0x2010],r13
+  401499:	mov    rsi,QWORD PTR [rbp-0x2010]
+  4014a0:	lea    rdi,[rbp-0x2000]
+  4014a7:	call   4010ff <bubsort>
+  4014ac:	cmp    rax,0x0
+  4014b0:	je     401552 <ovstat_err>
+  4014b6:	push   QWORD PTR [rbp-0x2058]
+  4014bc:	push   QWORD PTR [rbp-0x2050]
+  4014c2:	push   QWORD PTR [rbp-0x2048]
+  4014c8:	push   QWORD PTR [rbp-0x2040]
+  4014ce:	mov    r9,QWORD PTR [rbp-0x2038]
+  4014d5:	mov    r8,QWORD PTR [rbp-0x2030]
+  4014dc:	mov    rcx,QWORD PTR [rbp-0x2028]
+  4014e3:	mov    rdx,QWORD PTR [rbp-0x2020]
+  4014ea:	mov    rsi,QWORD PTR [rbp-0x2010]
+  4014f1:	lea    rdi,[rbp-0x2000]
+  4014f8:	call   4011e4 <stats>
+  4014fd:	cmp    rax,0x0
+  401501:	je     401552 <ovstat_err>
+  401503:	mov    rbx,QWORD PTR [rbp-0x2018]
+  40150a:	lea    r12,[rbp-0x2000]
+  401511:	mov    r13,QWORD PTR [rbp-0x2010]
+
+0000000000401518 <ovstat_marshal_loop>:
+  401518:	cmp    r13,0x0
+  40151c:	je     401559 <ovstat_end>
+  40151e:	cmp    r13,0x1
+  401522:	je     401528 <ovstat_marshal_last_elem>
+  401524:	mov    cl,0x2c
+  401526:	jmp    40152a <ovstat_marshal_just_write_the_thing>
+
+0000000000401528 <ovstat_marshal_last_elem>:
+  401528:	mov    cl,0x0
+
+000000000040152a <ovstat_marshal_just_write_the_thing>:
+  40152a:	mov    rdx,0x80
+  401531:	mov    rsi,rbx
+  401534:	mov    rdi,QWORD PTR [r12]
+  401538:	call   401317 <itosd>
+  40153d:	cmp    rax,0x0
+  401541:	je     401552 <ovstat_err>
+  401543:	mov    rbx,rax
+  401546:	inc    rbx
+  401549:	add    r12,0x8
+  40154d:	dec    r13
+  401550:	jmp    401518 <ovstat_marshal_loop>
+
+0000000000401552 <ovstat_err>:
+  401552:	mov    rax,0xffffffffffffffff
+
+0000000000401559 <ovstat_end>:
+  401559:	pop    r13
+  40155b:	pop    r12
+  40155d:	pop    rbx
+  40155e:	mov    rsp,rbp
+  401561:	pop    rbp
+  401562:	ret    
+
+0000000000401563 <_start>:
+  401563:	push   0x40208c
+  401568:	push   0x402084
+  40156d:	push   0x40207c
+  401572:	mov    r9,0x402074
+  401579:	mov    r8,0x40206c
+  401580:	mov    rcx,0x402064
+  401587:	mov    rdx,0x40205c
+  40158e:	mov    rsi,0x402054
+  401595:	mov    rdi,0x402000
+  40159c:	call   4013c0 <ovstat>
+  4015a1:	mov    rax,0x3c
+  4015a8:	mov    rdi,0x0
+  4015af:	syscall 
