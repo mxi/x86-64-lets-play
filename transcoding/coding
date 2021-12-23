@@ -1,0 +1,214 @@
+This document outlines my notes of x86/x86-64 instruction encoding 
+produced while reading Intel's Intel 64, IA-32 reference manual, 
+Volume 2: Instruction Set Reference, Chapter 2.
+
+Everything in this document is my interpretation of Intel's manual 
+and experimentation with disassembly, so take everything with a grain
+of salt. If anything is incorrect, please inform me (email on my GH
+or something.)
+
+
+Encoding x86
+-----------------------------------------------------------------------
+x86-64 encoding is nearly identical to that of x86, so it is useful
+to start here. The general form of an encoding takes the form of
+
+	0x0                                                   0xF
+	[Prefix(es)] [Opcode Byte(s)] [ModR/M] [SIB] [Disp] [Imm]
+
+	7------0   7---6   5------3   2---0
+	[Mod/RM] = [Mod] + [reg/op] + [r/m]
+
+	7---0   7-----6   5-----3   2----0
+	[SIB] = [Scale] + [Index] + [Base]
+
+Prefixes are bytes that provide additional information on how to 
+interpret the instruction, and are listed as the following:
+
+	GROUP#	NAME			VALUE	NOTES
+	---------------------------------------------
+	1	LOCK			0xF0
+	1	REPNE/REPNZ		0xF2
+	1	REP,REPE/REPZ		0xF3
+	1	BND			0xF2	1
+
+	2	CS Override		0x2E
+	2	SS Override		0x36
+	2	DS Override		0x3E
+	2	ES Override		0x26
+	2	FS Override		0x64
+	2	GS Override		0x65
+	2	Branch Not Taken	0x2E	2
+	2	Branch Taken		0x3E	2
+
+	3	Operand Size Override	0x66	3
+
+	4	Address Size Override	0x67
+	---------------------------------------------
+	[1] Intel's MPX prefix for some security stuff
+	(https://stackoverflow.com/questions/43057460/meaning-of-bnd-ret-in-x86)
+
+	[2] According to Intel, modern architectures don't take hints
+	anymore and these prefixes are reserved for later hint use.
+
+	[3] Sometimes, this is a mandatory prefix to differentiate
+	between different forms of an instruction.
+
+The opcode may be anywhere from 1-3 bytes in length. In multi-byte 
+opcodes, usually the first byte is the escape byte 0x0F followed by the 
+1-2 actual opcode bytes. For example:
+
+	MNEMONIC	PREFIX	OPCODE-BYTES
+	--------------------------------------
+	CVTDQ2PD	0xF3	0x0F 0xE6
+	PHADDW		0x66	0x0F 0x38 0x01
+
+The ModR/M byte encodes an addressing mode for at most two 
+non-immediate operands with only the first operand able to be a memory
+operand (memory dereference.) With 32-bit addressing, there are special
+cases that arise due to how the SIB byte is integrated.
+
+When Mod != 0b11 and r/m = 0b100, the processor will expect the SIB 
+byte to follow. In this manner, $esp loses its ability to address 
+memory solely with ModR/M. For $esp to address memory, the SIB byte's
+base field must specify $esp. However, due to this work around, an 
+index in the SIB byte must be made ineffective (nullified), otherwise
+$esp memory addressing will always have to have a scaled-index 
+component. Once again, $esp is sacrificed to make room for this 
+ineffective index component, hence $esp cannot be used as an index
+register. In other words, to prevent [esp+esp*n+d], which doesn't make
+sense anyways, $esp is disallowed from being an index register. For 
+example, here is the x86-64 encoding of $eax vs. $esp memory 
+addressing:
+
+	LINE	HEX		ASSEMBLY
+	------------------------------
+	1	8B00		mov eax, [eax]
+	2	8B0424		mov eax, [esp]
+
+	In line 1, because $eax can address memory alone just fine, we
+	only need the ModR/M byte 0x00.
+
+	In line 2, however, $esp memory addressing requires the 
+	additional SIB byte 0x24 with a base field of 0b100 ($esp), and 
+	the ineffective index 0b100 ($esp).
+
+When Mod = 0b00 and r/m = 0b101, i.e., ModR/M = 0b00xxx101, where xxx
+are the irrelevant reg field bits, the processor will only use the 
+32-bit displacement to address memory, hence $ebp cannot address memory 
+alone. To address $ebp, the 8-bit displacement form with Mod = 0b01 
+must be used with a displacement of 0. For example, consider these
+three lines:
+
+	LINE	HEX		ASSEMBLY
+	----------------------------------------
+	1	030507000000	add eax, [7]
+	2	034500		add eax, [ebp]
+	3	034507		add eax, [ebp+7]
+
+	In line 1, because we are only addressing a 32-bit 
+	displacement, we use Mod = 0b00 and r/m = 0b101. However, this
+	conflicts with our desire to use $ebp memory addressing:
+
+	In line 2, the assembler automatically uses the null 8-bit
+	displacement for us, hence Mod = 0b01 and r/m = 0b101.
+
+	In line 3, we demonstrate the point further by providing our
+	own tiny displacement of 7, and sure enough, the binary form
+	is almost identical to line 2.
+
+The displacement bytes (up to 4), follow the ModR/M (or SIB if
+present), and they specify the offset used in memory addressing. As
+shown above, it is also used to allow $ebp to be the base register when 
+addressing memory.
+
+The immediate bytes (up to 4) specify the immediate operand for an 
+instruction if required.
+
+
+REX Prefix
+-----------------------------------------------------------------------
+The main difference between x86 and x86-64 is the introduction of the
+REX prefix, which, as the name implies, for the most part, extends the 
+available registers.
+
+In 64-bit mode, the REX prefix is a byte in range 0x40 to 0x4F, which 
+consequently overrides instructions like INC (0x40) and DEC (0x48). The
+superseded instructions are given new forms with extensions in the
+ModR/M byte.
+
+The breakdown for the REX byte is as follows:
+
+	7---4 ------3 ------2 ------1 ------0
+	[0x4] [REX.W] [REX.R] [REX.X] [REX.B]
+
+	0x4 is used to identify the REX prefix (hence some instructions
+	are superseded in 64-bit mode;)
+
+	If REX.W = 1, uses 64-bit operands (sign/zero extending
+	depending on the instruction) and ignores 0x66 (operand size
+	override) prefix;
+
+	If REX.W = 0, operand size is based on the instruction default
+	and can be overriden by the 0x66 (operand size override) 
+	prefix;
+
+	REX.R extends ModR/M reg field to 4 bits;
+
+	REX.X extends SIB index field to 4 bits;
+
+	REX.B may extend different fields on certain conditions:
+		1) If the instruction does not have ModR/M nor SIB,
+		   REX.B extends the opcode reg field to 4 bits.
+		2) If the instruction ONLY has the ModR/M byte (i.e.,
+		   does NOT have an SIB byte), REX.B extends the r/m 
+		   field to 4 bits.
+		3) If the instruction has an SIB byte, REX.B extends
+		   the SIB base field to 4 bits.
+
+Just like with $esp and $rsp, if $r12 (0b1100) is required to address 
+memory, the SIB byte must be used because of the SIB invocation with 
+ModR/M (Mod != 0b11, r/m = 0b100). However, REX.B allows $r12 to be
+an index register unlike $esp and $rsp, i.e., something like
+[rax+r12*4+4] is a valid address form.
+
+If $r13 is to address memory, the same restrictions apply as to $ebp
+and $rbp, that is, the 8-bit displacement of 0 form must be used.
+
+In 64-bit mode, although rarely, an immediate may use 8 bytes, for 
+example:
+
+	HEX			ASSEMBLY
+	---------------------------------------------------
+	48B8B1A1F0E0D0C0B0A0	mov rax, 0xA0B0C0D0E0F0A1B1
+
+
+RIP Relative Addressing
+-----------------------------------------------------------------------
+In 64-bit mode, when ModR/M = 0x00xxx101, with xxx being the irrelevant
+reg field bits, instead of directly addressing a simple 32-bit 
+displacement as in compatibility mode, the instruction will perform
+$rip based/relative addressing with a 32-bit displacement.
+
+To continue using the simple 32-bit displacement addressing, an
+additional SIB byte must be included with any scale but with base =
+0b101 (ineffective $r/ebp) and index = 0b100 (ineffective $r/esp) to
+effectively create an empty base register. For instance, consider:
+
+	LINE	HEX		ASSEMBLY
+	----------------------------------------------
+	1	488B0500000000		mov rax, [rip]
+	1	488B0507000000		mov rax, [rip+7]
+	2	488B042507000000	mov rax, [7]
+
+	In line 1, ModR/M = 0x05, which would just be the 32-bit
+	displacement as we saw earlier, is now actually $rip relative 
+	addressing with a null, 32-bit displacement.
+
+	In line 2, we add our own displacement of 7 for demonstration.
+
+	In line 3, we go back to the 32-bit displacement memory 
+	addressing but this time relying on r/m = 0b100 to activate the
+	SIB byte, and using ineffective base (0b101) and index (0b100)
+	to effectively remove the base register and just retain the
+	displacement.
