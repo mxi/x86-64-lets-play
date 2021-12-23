@@ -1,0 +1,248 @@
+     1                                 %line 1+1 ../../textbook/ch14/nisqrt_only.asm
+     2                                 [section .text]
+     3                                 [global nisqrt]
+     4                                 
+     5                                 nisqrt:
+     6                                 
+     7                                 
+     8                                 
+     9                                 
+    10                                 
+    11 00000000 53                      push rbx
+    12                                 
+    13 00000001 49C7C200000000          mov r10, 0
+    14 00000008 4989FB                  mov r11, rdi
+    15 0000000B 4C89DB                  mov rbx, r11
+    16                                 nisqrt_bin_loop:
+    17 0000000E 4C89D8                  mov rax, r11
+    18 00000011 4C29D0                  sub rax, r10
+    19 00000014 4883F801                cmp rax, 1
+    20 00000018 761D                    jbe nisqrt_bin_loop_end
+    21 0000001A 48D1E8                  shr rax, 1
+    22 0000001D 4C01D0                  add rax, r10
+    23 00000020 4889C3                  mov rbx, rax
+    24 00000023 48F7E0                  mul rax
+    25 00000026 4839F8                  cmp rax, rdi
+    26 00000029 7202                    jb nisqrt_too_low
+    27 0000002B 7705                    ja nisqrt_too_high
+    28 0000002D EB08                    jmp nisqrt_bin_loop_end
+    29                                 nisqrt_too_low:
+    30 0000002F 4989DA                  mov r10, rbx
+    31 00000032 EBD8                    jmp nisqrt_bin_loop
+    32                                 nisqrt_too_high:
+    33 00000034 4989DB                  mov r11, rbx
+    34 00000037 EBD3                    jmp nisqrt_bin_loop
+    35                                 nisqrt_bin_loop_end:
+    36 00000039 4889D8                  mov rax, rbx
+    37 0000003C 48F7E0                  mul rax
+    38 0000003F 4839F8                  cmp rax, rdi
+    39 00000042 7202                    jb nisqrt_test_incr_nearest
+    40 00000044 7721                    ja nisqrt_test_decr_nearest
+    41 00000046 EB3E                    jmp nisqrt_test_end
+    42                                 nisqrt_test_incr_nearest:
+    43 00000048 4989FA                  mov r10, rdi
+    44 0000004B 4929C2                  sub r10, rax
+    45 0000004E 4889D8                  mov rax, rbx
+    46 00000051 48FFC0                  inc rax
+    47 00000054 48F7E0                  mul rax
+    48 00000057 4989C3                  mov r11, rax
+    49 0000005A 4929FB                  sub r11, rdi
+    50 0000005D 4D39DA                  cmp r10, r11
+    51 00000060 7700                    ja nisqrt_test_accept_incr
+    52 00000062 EB22                    jmp nisqrt_test_end
+    53                                 nisqrt_test_accept_incr:
+    54 00000064 48FFC3                  inc rbx
+    55 00000067 EB1D                    jmp nisqrt_test_end
+    56                                 nisqrt_test_decr_nearest:
+    57 00000069 4989C2                  mov r10, rax
+    58 0000006C 4929C2                  sub r10, rax
+    59 0000006F 4889D8                  mov rax, rbx
+    60 00000072 48FFC8                  dec rax
+    61 00000075 48F7E0                  mul rax
+    62 00000078 4989FB                  mov r11, rdi
+    63 0000007B 4929C3                  sub r11, rax
+    64 0000007E 4D39DA                  cmp r10, r11
+    65 00000081 7700                    ja nisqrt_test_accept_decr
+    66 00000083 EB01                    jmp nisqrt_test_end
+    67                                 nisqrt_test_accept_decr:
+    68 00000085 48FFCB                  dec rbx
+    69                                 nisqrt_test_end:
+    70 00000088 4889D8                  mov rax, rbx
+    71                                 nisqrt_end:
+    72 0000008B 5B                      pop rbx
+    73 0000008C C3                     ret
+    74                                 %line 2+1 ../../textbook/ch14/stats_only.asm
+    75                                 
+    76                                 %line 9+1 ../../textbook/ch14/stats_only.asm
+    77                                 
+    78                                 
+    79                                 [section .text]
+    80                                 [global stats]
+    81                                 
+    82                                 stats:
+    83                                 
+    84                                 
+    85                                 
+    86                                 
+    87                                 
+    88                                 
+    89                                 
+    90                                 
+    91                                 
+    92                                 
+    93                                 
+    94                                 
+    95                                 
+    96                                 
+    97 0000008D 55                      push rbp
+    98 0000008E 4889E5                  mov rbp, rsp
+    99 00000091 53                      push rbx
+   100                                 
+   101                                 
+   102 00000092 48C7C000000000          mov rax, 0
+   103                                 
+   104                                 %line 35+0 ../../textbook/ch14/stats_only.asm
+   105                                 
+   106 00000099 4883FF00                cmp rdi, 0
+   107 0000009D 0F8411010000            jz stats_end
+   108                                 %line 36+1 ../../textbook/ch14/stats_only.asm
+   109                                 
+   110                                 %line 36+0 ../../textbook/ch14/stats_only.asm
+   111                                 
+   112 000000A3 4883FE00                cmp rsi, 0
+   113 000000A7 0F8407010000            jz stats_end
+   114                                 %line 37+1 ../../textbook/ch14/stats_only.asm
+   115                                 
+   116                                 %line 37+0 ../../textbook/ch14/stats_only.asm
+   117                                 
+   118 000000AD 4883FA00                cmp rdx, 0
+   119 000000B1 0F84FD000000            jz stats_end
+   120                                 %line 38+1 ../../textbook/ch14/stats_only.asm
+   121                                 
+   122                                 %line 38+0 ../../textbook/ch14/stats_only.asm
+   123                                 
+   124 000000B7 4883F900                cmp rcx, 0
+   125 000000BB 0F84F3000000            jz stats_end
+   126                                 %line 39+1 ../../textbook/ch14/stats_only.asm
+   127                                 
+   128                                 %line 39+0 ../../textbook/ch14/stats_only.asm
+   129                                 
+   130 000000C1 4983F800                cmp r8, 0
+   131 000000C5 0F84E9000000            jz stats_end
+   132                                 %line 40+1 ../../textbook/ch14/stats_only.asm
+   133                                 
+   134                                 %line 40+0 ../../textbook/ch14/stats_only.asm
+   135                                 
+   136 000000CB 4983F900                cmp r9, 0
+   137 000000CF 0F84DF000000            jz stats_end
+   138                                 %line 41+1 ../../textbook/ch14/stats_only.asm
+   139                                 
+   140                                 %line 41+0 ../../textbook/ch14/stats_only.asm
+   141                                 
+   142 000000D5 48837D1000              cmp QWORD [rbp+16], 0
+   143 000000DA 0F84D4000000            jz stats_end
+   144                                 %line 42+1 ../../textbook/ch14/stats_only.asm
+   145                                 
+   146                                 %line 42+0 ../../textbook/ch14/stats_only.asm
+   147                                 
+   148 000000E0 48837D1800              cmp QWORD [rbp+24], 0
+   149 000000E5 0F84C9000000            jz stats_end
+   150                                 %line 43+1 ../../textbook/ch14/stats_only.asm
+   151                                 
+   152                                 %line 43+0 ../../textbook/ch14/stats_only.asm
+   153                                 
+   154 000000EB 48837D2000              cmp QWORD [rbp+32], 0
+   155 000000F0 0F84BE000000            jz stats_end
+   156                                 %line 44+1 ../../textbook/ch14/stats_only.asm
+   157                                 
+   158                                 %line 44+0 ../../textbook/ch14/stats_only.asm
+   159                                 
+   160 000000F6 48837D2800              cmp QWORD [rbp+40], 0
+   161 000000FB 0F84B3000000            jz stats_end
+   162                                 %line 45+1 ../../textbook/ch14/stats_only.asm
+   163                                 
+   164                                 
+   165 00000101 4C8B17                  mov r10, QWORD [rdi]
+   166 00000104 4C8912                  mov QWORD [rdx], r10
+   167                                 
+   168                                 
+   169 00000107 4C8D54F7F8              lea r10, QWORD [rdi+rsi*8-8]
+   170 0000010C 4D8B1A                  mov r11, QWORD [r10]
+   171 0000010F 4D8919                  mov QWORD [r9], r11
+   172                                 
+   173                                 
+   174 00000112 4989F2                  mov r10, rsi
+   175 00000115 4983E201                and r10, 1
+   176 00000119 7515                    jnz stats_med_odd
+   177                                 stats_med_even:
+   178 0000011B 4989F2                  mov r10, rsi
+   179 0000011E 49D1EA                  shr r10, 1
+   180 00000121 4E8B5CD7F8              mov r11, QWORD [rdi+r10*8-8]
+   181 00000126 4C8919                  mov QWORD [rcx], r11
+   182 00000129 4E8B1CD7                mov r11, QWORD [rdi+r10*8]
+   183 0000012D 4D8918                  mov QWORD [r8], r11
+   184 00000130 EB0E                    jmp stats_med_end
+   185                                 stats_med_odd:
+   186 00000132 4989F2                  mov r10, rsi
+   187 00000135 49D1EA                  shr r10, 1
+   188 00000138 4E8B1CD7                mov r11, QWORD [rdi+r10*8]
+   189 0000013C 4C8919                  mov QWORD [rcx], r11
+   190 0000013F 4D8918                  mov QWORD [r8], r11
+   191                                 stats_med_end:
+   192                                 
+   193                                 
+   194 00000142 49C7C200000000          mov r10, 0
+   195 00000149 48C7C000000000          mov rax, 0
+   196                                 stats_sum_loop:
+   197 00000150 4A0304D7                add rax, QWORD [rdi+r10*8]
+   198 00000154 49FFC2                  inc r10
+   199 00000157 4939F2                  cmp r10, rsi
+   200 0000015A 72F2                    jb stats_sum_loop
+   201 0000015C 4C8B5D10                mov r11, QWORD [rbp+16]
+   202 00000160 498903                  mov QWORD [r11], rax
+   203                                 
+   204                                 
+   205 00000163 52                      push rdx
+   206 00000164 4899                    cqo
+   207 00000166 48F7FE                  idiv rsi
+   208 00000169 4C8B5D18                mov r11, QWORD [rbp+24]
+   209 0000016D 498903                  mov QWORD [r11], rax
+   210 00000170 5A                      pop rdx
+   211                                 
+   212                                 
+   213 00000171 52                      push rdx
+   214 00000172 488B5D20                mov rbx, QWORD [rbp+32]
+   215 00000176 49C7C200000000          mov r10, 0
+   216 0000017D 4989C3                  mov r11, rax
+   217                                 stats_var_loop:
+   218 00000180 4A8B04D7                mov rax, QWORD [rdi+r10*8]
+   219 00000184 4C29D8                  sub rax, r11
+   220 00000187 48F7E8                  imul rax
+   221 0000018A 480103                  add QWORD [rbx], rax
+   222 0000018D 49FFC2                  inc r10
+   223 00000190 4939F2                  cmp r10, rsi
+   224 00000193 72E9                    jb stats_var_loop
+   225                                 
+   226                                 
+   227 00000195 488B03                  mov rax, QWORD [rbx]
+   228 00000198 48C7C200000000          mov rdx, 0
+   229 0000019F 48F7F6                  div rsi
+   230 000001A2 488903                  mov QWORD [rbx], rax
+   231 000001A5 5A                      pop rdx
+   232                                 
+   233                                 
+   234 000001A6 57                      push rdi
+   235 000001A7 4889C7                  mov rdi, rax
+   236 000001AA E84CFEFFFF              call nisqrt
+   237 000001AF 488B5D28                mov rbx, QWORD [rbp+40]
+   238 000001B3 488903                  mov QWORD [rbx], rax
+   239 000001B6 5F                      pop rdi
+   240                                 
+   241                                 
+   242 000001B7 4889F8                  mov rax, rdi
+   243                                 
+   244                                 stats_end:
+   245 000001BA 5B                      pop rbx
+   246 000001BB 4889EC                  mov rsp, rbp
+   247 000001BE 5D                      pop rbp
+   248 000001BF C3                     ret

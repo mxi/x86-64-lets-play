@@ -1,0 +1,61 @@
+     1                                 %line 1+1 ../../textbook/ch10/itos.asm
+     2                                 [section .data]
+     3 00000000 A1CAF51700000000A4-     Nums dq 401984161, 73236900, -28291946, -492079933, 199821803
+     4 00000000 815D0400000000964C-
+     5 00000000 50FEFFFFFFFFC374AB-
+     6 00000000 E2FFFFFFFFEB09E90B-
+     7 00000000 00000000           
+     8                                 
+     9                                  LEN equ 5
+    10                                  BUFSZ equ 16
+    11                                 
+    12                                 [section .bss]
+    13 00000000 <gap>                   Buffer resb BUFSZ
+    14                                 
+    15                                 [section .text]
+    16                                 [global _start]
+    17                                 
+    18                                 _start:
+    19 00000000 48C7C105000000          mov rcx, LEN
+    20 00000007 49C7C100000000          mov r9, 0
+    21                                 nums_loop:
+    22 0000000E 48C7C300000000          mov rbx, 0
+    23 00000015 48C7C700000000          mov rdi, 0
+    24 0000001C 49C7C00A000000          mov r8, 10
+    25 00000023 4A8B04CD[00000000]      mov rax, QWORD [Nums+r9*8]
+    26 0000002B 4883F800                cmp rax, 0
+    27 0000002F 7D08                    jge push_loop
+    28 00000031 48C7C301000000          mov rbx, 1
+    29 00000038 48F7D8                  neg rax
+    30                                 
+    31                                 
+    32                                 push_loop:
+    33 0000003B 4899                    cqo
+    34 0000003D 49F7F0                  div r8
+    35 00000040 52                      push rdx
+    36 00000041 48FFC7                  inc rdi
+    37 00000044 4883F800                cmp rax, 0
+    38 00000048 7FEF                    jg push_loop
+    39                                 
+    40                                 
+    41 0000004A 48C7C600000000          mov rsi, 0
+    42 00000051 4883FB00                cmp rbx, 0
+    43 00000055 740B                    je pop_loop
+    44 00000057 C686[00000000]2D        mov BYTE [Buffer+rsi], "-"
+    45 0000005E 48FFC6                  inc rsi
+    46 00000061 48FFC7                  inc rdi
+    47                                 pop_loop:
+    48 00000064 5A                      pop rdx
+    49 00000065 4883C230                add rdx, 0x30
+    50 00000069 8896[00000000]          mov BYTE [Buffer+rsi], dl
+    51 0000006F 48FFC6                  inc rsi
+    52 00000072 4839FE                  cmp rsi, rdi
+    53 00000075 72EB                    jb pop_loop
+    54 00000077 C686[00000000]00        mov BYTE [Buffer+rsi], 0
+    55 0000007E 49FFC1                  inc r9
+    56 00000081 E289                    loop nums_loop
+    57                                 
+    58                                 
+    59 00000083 48C7C03C000000          mov rax, 60
+    60 0000008A 48C7C700000000          mov rdi, 0
+    61 00000091 0F05                    syscall

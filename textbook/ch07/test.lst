@@ -1,0 +1,12 @@
+     1                                 %line 1+1 ../../textbook/ch07/test.asm
+     2                                 [section .text]
+     3                                 [global _start]
+     4                                 
+     5                                 _start:
+     6 00000000 66B80000                mov ax, 0
+     7 00000004 B0FF                    mov al, -1
+     8 00000006 90                      nop
+     9 00000007 660FBEC0                movsx ax, al
+    10 0000000B 48C7C03C000000          mov rax, 60
+    11 00000012 48C7C700000000          mov rdi, 0
+    12 00000019 0F05                    syscall

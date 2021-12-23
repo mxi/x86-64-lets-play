@@ -1,0 +1,39 @@
+     1                                 %line 1+1 ../../textbook/ch10/stoi.asm
+     2                                 [section .data]
+     3 00000000 323636333100            NumStr db "26631", 0
+     4                                 
+     5                                 [section .bss]
+     6 00000000 <gap>                   Num resq 1
+     7                                 
+     8                                 [section .text]
+     9                                 [global _start]
+    10                                 
+    11                                 _start:
+    12 00000000 48C7C6[00000000]        mov rsi, NumStr
+    13 00000007 48C7C30A000000          mov rbx, 10
+    14 0000000E 48C7C100000000          mov rcx, 0
+    15                                 push_loop:
+    16 00000015 803E00                  cmp BYTE [rsi], 0
+    17 00000018 740F                    je push_loop_end
+    18 0000001A 480FB606                movzx rax, BYTE [rsi]
+    19 0000001E 4883E830                sub rax, 0x30
+    20 00000022 50                      push rax
+    21 00000023 48FFC1                  inc rcx
+    22 00000026 48FFC6                  inc rsi
+    23 00000029 EBE8                    jmp push_loop
+    24                                 push_loop_end:
+    25 0000002B 48C7C600000000          mov rsi, 0
+    26 00000032 48C7C701000000          mov rdi, 1
+    27                                 pop_loop:
+    28 00000039 58                      pop rax
+    29 0000003A 48F7E7                  mul rdi
+    30 0000003D 4801C6                  add rsi, rax
+    31 00000040 4889F8                  mov rax, rdi
+    32 00000043 48F7E3                  mul rbx
+    33 00000046 4889C7                  mov rdi, rax
+    34 00000049 E2EC                    loop pop_loop
+    35 0000004B 48893425[00000000]      mov QWORD [Num], rsi
+    36                                 
+    37 00000053 48C7C03C000000          mov rax, 60
+    38 0000005A 48C7C700000000          mov rdi, 0
+    39 00000061 0F05                    syscall

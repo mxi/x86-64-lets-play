@@ -1,0 +1,778 @@
+     1                                 %line 3+1 ../../textbook/ch14/constants.asm
+     2                                 [section .rodata]
+     3                                 
+     4                                  LF equ 0x0a
+     5                                 
+     6                                 
+     7                                  SYS_read equ 0
+     8                                  SYS_write equ 1
+     9                                  SYS_open equ 2
+    10                                  SYS_close equ 3
+    11                                  SYS_lseek equ 8
+    12                                  SYS_exit equ 60
+    13                                 
+    14                                 
+    15                                  SYS_stdin equ 0
+    16                                  SYS_stdout equ 1
+    17                                  SYS_stderr equ 2
+    18                                 
+    19                                 
+    20                                  O_ACCMODE equ 00000003
+    21                                  O_RDONLY equ 00000000
+    22                                  O_WRONLY equ 00000001
+    23                                  O_RDWR equ 00000002
+    24                                  O_CREAT equ 00000100
+    25                                  O_EXCL equ 00000200
+    26                                  O_NOCTTY equ 00000400
+    27                                  O_TRUNC equ 00001000
+    28                                  O_APPEND equ 00002000
+    29                                  O_NONBLOCK equ 00004000
+    30                                  O_DSYNC equ 00010000
+    31                                  FASYNC equ 00020000
+    32                                  O_DIRECT equ 00040000
+    33                                  O_LARGEFILE equ 00100000
+    34                                  O_DIRECTORY equ 00200000
+    35                                  O_NOFOLLOW equ 00400000
+    36                                  O_NOATIME equ 01000000
+    37                                  O_CLOEXEC equ 02000000
+    38                                 
+    39                                  S_IRWXU equ 00700
+    40                                  S_IRUSR equ 00400
+    41                                  S_IWUSR equ 00200
+    42                                  S_IXUSR equ 00100
+    43                                 
+    44                                  S_IRWXG equ 00070
+    45                                  S_IRGRP equ 00040
+    46                                  S_IWGRP equ 00020
+    47                                  S_IXGRP equ 00010
+    48                                 
+    49                                  S_IRWXO equ 00007
+    50                                  S_IROTH equ 00004
+    51                                  S_IWOTH equ 00002
+    52                                  S_IXOTH equ 00001
+    53                                 
+    54                                 
+    55                                  SEEK_SET equ 0
+    56                                  SEEK_CUR equ 1
+    57                                  SEEK_END equ 2
+    58                                 
+    59                                 
+    60                                  EXIT_success equ 0
+    61                                  EXIT_failure equ 1
+    62                                 %line 1+1 ../../textbook/ch14/strlend_only.asm
+    63                                 [section .text]
+    64                                 [global strlend]
+    65                                 
+    66                                 strlend:
+    67                                 
+    68                                 
+    69                                 
+    70                                 
+    71                                 
+    72                                 
+    73                                 
+    74                                 
+    75                                 
+    76                                 
+    77                                 
+    78                                 
+    79 00000000 48C7C000000000          mov rax, 0
+    80 00000007 4989F2                  mov r10, rsi
+    81 0000000A 4883FE00                cmp rsi, 0
+    82 0000000E 741A                    jz strlend_finish
+    83                                 
+    84 00000010 4883FA00                cmp rdx, 0
+    85 00000014 7414                    jz strlend_finish
+    86                                 
+    87                                 strlend_loop:
+    88 00000016 41803A00                cmp BYTE [r10], 0
+    89 0000001A 7408                    je strlend_loop_end
+    90 0000001C 41380A                  cmp BYTE [r10], cl
+    91 0000001F 7403                    je strlend_loop_end
+    92 00000021 49FFC2                  inc r10
+    93 00000024 EBEE                    jmp strlend_loop
+    94                                 strlend_loop_end:
+    95 00000026 4C89D0                  mov rax, r10
+    96 00000029 4829F0                  sub rax, rsi
+    97                                 strlend_finish:
+    98 0000002C 4883FF00                cmp rdi, 0
+    99 00000030 7401                    jz strlend_end
+   100 00000032 4C8917                  mov QWORD [rdi], r10
+   101                                 strlend_end:
+   102 00000035 C3                     ret
+   103                                 %line 1+1 ../../textbook/ch14/stoid_only.asm
+   104                                 [section .text]
+   105                                 [global stoid]
+   106                                 stoid:
+   107                                 
+   108                                 
+   109                                 
+   110                                 
+   111                                 
+   112                                 
+   113                                 
+   114                                 
+   115                                 
+   116 00000036 53                      push rbx
+   117 00000037 4154                    push r12
+   118 00000039 4155                    push r13
+   119                                 
+   120                                 
+   121 0000003B 48C7C000000000          mov rax, 0
+   122 00000042 4883FF00                cmp rdi, 0
+   123 00000046 0F84A7000000            jz stoid_end
+   124                                 
+   125 0000004C 4883FE00                cmp rsi, 0
+   126 00000050 0F849D000000            jz stoid_end
+   127                                 
+   128 00000056 4883FA00                cmp rdx, 0
+   129 0000005A 0F8493000000            jz stoid_end
+   130                                 
+   131                                 
+   132 00000060 48C70700000000          mov QWORD [rdi], 0
+   133 00000067 4889F0                  mov rax, rsi
+   134 0000006A 4989C3                  mov r11, rax
+   135 0000006D 4901D3                  add r11, rdx
+   136                                 stoid_skip_space_loop:
+   137 00000070 4C39D8                  cmp rax, r11
+   138 00000073 0F847A000000            je stoid_end
+   139 00000079 803820                  cmp BYTE [rax], " "
+   140 0000007C 7503                    jne stoid_skip_space_loop_end
+   141 0000007E 48FFC0                  inc rax
+   142 00000081 EBEB                    jmp stoid_skip_space_loop
+   143                                 stoid_skip_space_loop_end:
+   144 00000083 4989C2                  mov r10, rax
+   145                                 
+   146                                 
+   147 00000086 49C7C401000000          mov r12, 1
+   148 0000008D 41803A2D                cmp BYTE [r10], "-"
+   149 00000091 7406                    je stoid_negative
+   150 00000093 41803A2B                cmp BYTE [r10], "+"
+   151 00000097 7407                    je stoid_positive
+   152 00000099 EB08                    jmp stoid_nosign
+   153                                 stoid_negative:
+   154 0000009B 49C7C4FFFFFFFF          mov r12, -1
+   155                                 stoid_positive:
+   156 000000A2 49FFC2                  inc r10
+   157                                 stoid_nosign:
+   158                                 
+   159                                 
+   160 000000A5 48C7C30A000000          mov rbx, 10
+   161 000000AC 48C7C000000000          mov rax, 0
+   162 000000B3 49C7C500000000          mov r13, 0
+   163                                 stoid_digit_loop:
+   164 000000BA 4D39DA                  cmp r10, r11
+   165 000000BD 742B                    je stoid_digit_loop_end
+   166 000000BF 458A2A                  mov r13b, BYTE [r10]
+   167 000000C2 4138CD                  cmp r13b, cl
+   168 000000C5 7423                    je stoid_digit_loop_end
+   169 000000C7 4180ED30                sub r13b, "0"
+   170                                 
+   171 000000CB 4180FD00                cmp r13b, 0
+   172 000000CF 7C10                    jl stoid_digit_loop_end_invalid
+   173 000000D1 4180FD09                cmp r13b, 9
+   174 000000D5 7F0A                    jg stoid_digit_loop_end_invalid
+   175                                 
+   176 000000D7 480FAFC3                imul rax, rbx
+   177 000000DB 4C01E8                  add rax, r13
+   178 000000DE 49FFC2                  inc r10
+   179 000000E1 EBD5                    jmp stoid_digit_loop
+   180                                 stoid_digit_loop_end_invalid:
+   181 000000E3 48C7C000000000          mov rax, 0
+   182 000000EA EB0B                    jmp stoid_end
+   183                                 stoid_digit_loop_end:
+   184                                 
+   185 000000EC 4989C5                  mov r13, rax
+   186 000000EF 4D0FAFEC                imul r13, r12
+   187 000000F3 4C892F                  mov QWORD [rdi], r13
+   188 000000F6 4C89D0                  mov rax, r10
+   189                                 
+   190                                 stoid_end:
+   191 000000F9 415D                    pop r13
+   192 000000FB 415C                    pop r12
+   193 000000FD 5B                      pop rbx
+   194 000000FE C3                     ret
+   195                                 %line 1+1 ../../textbook/ch14/bubsort_only.asm
+   196                                 [section .text]
+   197                                 [global bubsort]
+   198                                 
+   199                                 bubsort:
+   200                                 
+   201                                 
+   202                                 
+   203                                 
+   204                                 
+   205                                 
+   206                                 
+   207                                 
+   208 000000FF 48C7C000000000          mov rax, 0
+   209 00000106 4883FF00                cmp rdi, 0
+   210 0000010A 7448                    jz bubsort_end
+   211                                 
+   212 0000010C 4883FE00                cmp rsi, 0
+   213 00000110 7442                    jz bubsort_end
+   214                                 
+   215                                 
+   216 00000112 4889F8                  mov rax, rdi
+   217 00000115 4889F1                  mov rcx, rsi
+   218 00000118 48FFC9                  dec rcx
+   219                                 bubsort_pass_loop:
+   220 0000011B 49C7C000000000          mov r8, 0
+   221 00000122 48C7C700000000          mov rdi, 0
+   222                                 bubsort_swap_loop:
+   223 00000129 4839CF                  cmp rdi, rcx
+   224 0000012C 731E                    jae bubsort_swap_loop_end
+   225 0000012E 4C8B14F8                mov r10, QWORD [rax+rdi*8]
+   226 00000132 4C8B5CF808              mov r11, QWORD [rax+rdi*8+8]
+   227 00000137 4D39DA                  cmp r10, r11
+   228 0000013A 7E0B                    jle bubsort_noswap
+   229 0000013C 4C891CF8                mov QWORD [rax+rdi*8], r11
+   230 00000140 4C8954F808              mov QWORD [rax+rdi*8+8], r10
+   231 00000145 4983C801                or r8, 1
+   232                                 bubsort_noswap:
+   233 00000149 48FFC7                  inc rdi
+   234 0000014C EBD9                    jmp bubsort_swap_loop
+   235                                 bubsort_swap_loop_end:
+   236 0000014E 4983F800                cmp r8, 0
+   237 00000152 7400                    jz bubsort_end
+   238 00000154 E2C3                    loop bubsort_pass_loop
+   239                                 bubsort_end:
+   240 00000156 C3                     ret
+   241                                 %line 1+1 ../../textbook/ch14/nisqrt_only.asm
+   242                                 [section .text]
+   243                                 [global nisqrt]
+   244                                 
+   245                                 nisqrt:
+   246                                 
+   247                                 
+   248                                 
+   249                                 
+   250                                 
+   251 00000157 53                      push rbx
+   252                                 
+   253 00000158 49C7C200000000          mov r10, 0
+   254 0000015F 4989FB                  mov r11, rdi
+   255 00000162 4C89DB                  mov rbx, r11
+   256                                 nisqrt_bin_loop:
+   257 00000165 4C89D8                  mov rax, r11
+   258 00000168 4C29D0                  sub rax, r10
+   259 0000016B 4883F801                cmp rax, 1
+   260 0000016F 761D                    jbe nisqrt_bin_loop_end
+   261 00000171 48D1E8                  shr rax, 1
+   262 00000174 4C01D0                  add rax, r10
+   263 00000177 4889C3                  mov rbx, rax
+   264 0000017A 48F7E0                  mul rax
+   265 0000017D 4839F8                  cmp rax, rdi
+   266 00000180 7202                    jb nisqrt_too_low
+   267 00000182 7705                    ja nisqrt_too_high
+   268 00000184 EB08                    jmp nisqrt_bin_loop_end
+   269                                 nisqrt_too_low:
+   270 00000186 4989DA                  mov r10, rbx
+   271 00000189 EBD8                    jmp nisqrt_bin_loop
+   272                                 nisqrt_too_high:
+   273 0000018B 4989DB                  mov r11, rbx
+   274 0000018E EBD3                    jmp nisqrt_bin_loop
+   275                                 nisqrt_bin_loop_end:
+   276 00000190 4889D8                  mov rax, rbx
+   277 00000193 48F7E0                  mul rax
+   278 00000196 4839F8                  cmp rax, rdi
+   279 00000199 7202                    jb nisqrt_test_incr_nearest
+   280 0000019B 7721                    ja nisqrt_test_decr_nearest
+   281 0000019D EB3E                    jmp nisqrt_test_end
+   282                                 nisqrt_test_incr_nearest:
+   283 0000019F 4989FA                  mov r10, rdi
+   284 000001A2 4929C2                  sub r10, rax
+   285 000001A5 4889D8                  mov rax, rbx
+   286 000001A8 48FFC0                  inc rax
+   287 000001AB 48F7E0                  mul rax
+   288 000001AE 4989C3                  mov r11, rax
+   289 000001B1 4929FB                  sub r11, rdi
+   290 000001B4 4D39DA                  cmp r10, r11
+   291 000001B7 7700                    ja nisqrt_test_accept_incr
+   292 000001B9 EB22                    jmp nisqrt_test_end
+   293                                 nisqrt_test_accept_incr:
+   294 000001BB 48FFC3                  inc rbx
+   295 000001BE EB1D                    jmp nisqrt_test_end
+   296                                 nisqrt_test_decr_nearest:
+   297 000001C0 4989C2                  mov r10, rax
+   298 000001C3 4929C2                  sub r10, rax
+   299 000001C6 4889D8                  mov rax, rbx
+   300 000001C9 48FFC8                  dec rax
+   301 000001CC 48F7E0                  mul rax
+   302 000001CF 4989FB                  mov r11, rdi
+   303 000001D2 4929C3                  sub r11, rax
+   304 000001D5 4D39DA                  cmp r10, r11
+   305 000001D8 7700                    ja nisqrt_test_accept_decr
+   306 000001DA EB01                    jmp nisqrt_test_end
+   307                                 nisqrt_test_accept_decr:
+   308 000001DC 48FFCB                  dec rbx
+   309                                 nisqrt_test_end:
+   310 000001DF 4889D8                  mov rax, rbx
+   311                                 nisqrt_end:
+   312 000001E2 5B                      pop rbx
+   313 000001E3 C3                     ret
+   314                                 %line 2+1 ../../textbook/ch14/stats_only.asm
+   315                                 
+   316                                 %line 9+1 ../../textbook/ch14/stats_only.asm
+   317                                 
+   318                                 
+   319                                 [section .text]
+   320                                 [global stats]
+   321                                 
+   322                                 stats:
+   323                                 
+   324                                 
+   325                                 
+   326                                 
+   327                                 
+   328                                 
+   329                                 
+   330                                 
+   331                                 
+   332                                 
+   333                                 
+   334                                 
+   335                                 
+   336                                 
+   337 000001E4 55                      push rbp
+   338 000001E5 4889E5                  mov rbp, rsp
+   339 000001E8 53                      push rbx
+   340                                 
+   341                                 
+   342 000001E9 48C7C000000000          mov rax, 0
+   343                                 
+   344                                 %line 35+0 ../../textbook/ch14/stats_only.asm
+   345                                 
+   346 000001F0 4883FF00                cmp rdi, 0
+   347 000001F4 0F8411010000            jz stats_end
+   348                                 %line 36+1 ../../textbook/ch14/stats_only.asm
+   349                                 
+   350                                 %line 36+0 ../../textbook/ch14/stats_only.asm
+   351                                 
+   352 000001FA 4883FE00                cmp rsi, 0
+   353 000001FE 0F8407010000            jz stats_end
+   354                                 %line 37+1 ../../textbook/ch14/stats_only.asm
+   355                                 
+   356                                 %line 37+0 ../../textbook/ch14/stats_only.asm
+   357                                 
+   358 00000204 4883FA00                cmp rdx, 0
+   359 00000208 0F84FD000000            jz stats_end
+   360                                 %line 38+1 ../../textbook/ch14/stats_only.asm
+   361                                 
+   362                                 %line 38+0 ../../textbook/ch14/stats_only.asm
+   363                                 
+   364 0000020E 4883F900                cmp rcx, 0
+   365 00000212 0F84F3000000            jz stats_end
+   366                                 %line 39+1 ../../textbook/ch14/stats_only.asm
+   367                                 
+   368                                 %line 39+0 ../../textbook/ch14/stats_only.asm
+   369                                 
+   370 00000218 4983F800                cmp r8, 0
+   371 0000021C 0F84E9000000            jz stats_end
+   372                                 %line 40+1 ../../textbook/ch14/stats_only.asm
+   373                                 
+   374                                 %line 40+0 ../../textbook/ch14/stats_only.asm
+   375                                 
+   376 00000222 4983F900                cmp r9, 0
+   377 00000226 0F84DF000000            jz stats_end
+   378                                 %line 41+1 ../../textbook/ch14/stats_only.asm
+   379                                 
+   380                                 %line 41+0 ../../textbook/ch14/stats_only.asm
+   381                                 
+   382 0000022C 48837D1000              cmp QWORD [rbp+16], 0
+   383 00000231 0F84D4000000            jz stats_end
+   384                                 %line 42+1 ../../textbook/ch14/stats_only.asm
+   385                                 
+   386                                 %line 42+0 ../../textbook/ch14/stats_only.asm
+   387                                 
+   388 00000237 48837D1800              cmp QWORD [rbp+24], 0
+   389 0000023C 0F84C9000000            jz stats_end
+   390                                 %line 43+1 ../../textbook/ch14/stats_only.asm
+   391                                 
+   392                                 %line 43+0 ../../textbook/ch14/stats_only.asm
+   393                                 
+   394 00000242 48837D2000              cmp QWORD [rbp+32], 0
+   395 00000247 0F84BE000000            jz stats_end
+   396                                 %line 44+1 ../../textbook/ch14/stats_only.asm
+   397                                 
+   398                                 %line 44+0 ../../textbook/ch14/stats_only.asm
+   399                                 
+   400 0000024D 48837D2800              cmp QWORD [rbp+40], 0
+   401 00000252 0F84B3000000            jz stats_end
+   402                                 %line 45+1 ../../textbook/ch14/stats_only.asm
+   403                                 
+   404                                 
+   405 00000258 4C8B17                  mov r10, QWORD [rdi]
+   406 0000025B 4C8912                  mov QWORD [rdx], r10
+   407                                 
+   408                                 
+   409 0000025E 4C8D54F7F8              lea r10, QWORD [rdi+rsi*8-8]
+   410 00000263 4D8B1A                  mov r11, QWORD [r10]
+   411 00000266 4D8919                  mov QWORD [r9], r11
+   412                                 
+   413                                 
+   414 00000269 4989F2                  mov r10, rsi
+   415 0000026C 4983E201                and r10, 1
+   416 00000270 7515                    jnz stats_med_odd
+   417                                 stats_med_even:
+   418 00000272 4989F2                  mov r10, rsi
+   419 00000275 49D1EA                  shr r10, 1
+   420 00000278 4E8B5CD7F8              mov r11, QWORD [rdi+r10*8-8]
+   421 0000027D 4C8919                  mov QWORD [rcx], r11
+   422 00000280 4E8B1CD7                mov r11, QWORD [rdi+r10*8]
+   423 00000284 4D8918                  mov QWORD [r8], r11
+   424 00000287 EB0E                    jmp stats_med_end
+   425                                 stats_med_odd:
+   426 00000289 4989F2                  mov r10, rsi
+   427 0000028C 49D1EA                  shr r10, 1
+   428 0000028F 4E8B1CD7                mov r11, QWORD [rdi+r10*8]
+   429 00000293 4C8919                  mov QWORD [rcx], r11
+   430 00000296 4D8918                  mov QWORD [r8], r11
+   431                                 stats_med_end:
+   432                                 
+   433                                 
+   434 00000299 49C7C200000000          mov r10, 0
+   435 000002A0 48C7C000000000          mov rax, 0
+   436                                 stats_sum_loop:
+   437 000002A7 4A0304D7                add rax, QWORD [rdi+r10*8]
+   438 000002AB 49FFC2                  inc r10
+   439 000002AE 4939F2                  cmp r10, rsi
+   440 000002B1 72F2                    jb stats_sum_loop
+   441 000002B3 4C8B5D10                mov r11, QWORD [rbp+16]
+   442 000002B7 498903                  mov QWORD [r11], rax
+   443                                 
+   444                                 
+   445 000002BA 52                      push rdx
+   446 000002BB 4899                    cqo
+   447 000002BD 48F7FE                  idiv rsi
+   448 000002C0 4C8B5D18                mov r11, QWORD [rbp+24]
+   449 000002C4 498903                  mov QWORD [r11], rax
+   450 000002C7 5A                      pop rdx
+   451                                 
+   452                                 
+   453 000002C8 52                      push rdx
+   454 000002C9 488B5D20                mov rbx, QWORD [rbp+32]
+   455 000002CD 49C7C200000000          mov r10, 0
+   456 000002D4 4989C3                  mov r11, rax
+   457                                 stats_var_loop:
+   458 000002D7 4A8B04D7                mov rax, QWORD [rdi+r10*8]
+   459 000002DB 4C29D8                  sub rax, r11
+   460 000002DE 48F7E8                  imul rax
+   461 000002E1 480103                  add QWORD [rbx], rax
+   462 000002E4 49FFC2                  inc r10
+   463 000002E7 4939F2                  cmp r10, rsi
+   464 000002EA 72E9                    jb stats_var_loop
+   465                                 
+   466                                 
+   467 000002EC 488B03                  mov rax, QWORD [rbx]
+   468 000002EF 48C7C200000000          mov rdx, 0
+   469 000002F6 48F7F6                  div rsi
+   470 000002F9 488903                  mov QWORD [rbx], rax
+   471 000002FC 5A                      pop rdx
+   472                                 
+   473                                 
+   474 000002FD 57                      push rdi
+   475 000002FE 4889C7                  mov rdi, rax
+   476 00000301 E84CFEFFFF              call nisqrt
+   477 00000306 488B5D28                mov rbx, QWORD [rbp+40]
+   478 0000030A 488903                  mov QWORD [rbx], rax
+   479 0000030D 5F                      pop rdi
+   480                                 
+   481                                 
+   482 0000030E 4889F8                  mov rax, rdi
+   483                                 
+   484                                 stats_end:
+   485 00000311 5B                      pop rbx
+   486 00000312 4889EC                  mov rsp, rbp
+   487 00000315 5D                      pop rbp
+   488 00000316 C3                     ret
+   489                                 %line 1+1 ../../textbook/ch14/itosd_only.asm
+   490                                 [section .text]
+   491                                 [global itosd]
+   492                                 itosd:
+   493                                 
+   494                                 
+   495                                 
+   496                                 
+   497                                 
+   498                                 
+   499                                 
+   500                                 
+   501 00000317 53                      push rbx
+   502 00000318 4154                    push r12
+   503                                 
+   504                                 
+   505 0000031A 48C7C000000000          mov rax, 0
+   506 00000321 4883FE00                cmp rsi, 0
+   507 00000325 0F848B000000            jz itosd_end
+   508                                 
+   509 0000032B 4883FA00                cmp rdx, 0
+   510 0000032F 0F8481000000            jz itosd_end
+   511                                 
+   512                                 
+   513 00000335 4989D4                  mov r12, rdx
+   514 00000338 48C7C30A000000          mov rbx, 10
+   515 0000033F 49C7C200000000          mov r10, 0
+   516 00000346 49C7C300000000          mov r11, 0
+   517 0000034D 4889F8                  mov rax, rdi
+   518 00000350 4883F800                cmp rax, 0
+   519 00000354 7D08                    jge itosd_push_loop
+   520 00000356 49C7C201000000          mov r10, 1
+   521 0000035D 48F7D8                  neg rax
+   522                                 itosd_push_loop:
+   523 00000360 4899                    cqo
+   524 00000362 48F7F3                  div rbx
+   525 00000365 52                      push rdx
+   526 00000366 49FFC3                  inc r11
+   527 00000369 4883F800                cmp rax, 0
+   528 0000036D 77EF                    ja itosd_push_loop
+   529 0000036F 4C89E2                  mov rdx, r12
+   530                                 
+   531                                 
+   532 00000372 4889F0                  mov rax, rsi
+   533 00000375 4983FA00                cmp r10, 0
+   534 00000379 7411                    je itosd_pop_loop_prepare
+   535 0000037B 49C7C400000000          mov r12, 0
+   536 00000382 41B42D                  mov r12b, "-"
+   537 00000385 4983EC30                sub r12, "0"
+   538 00000389 4154                    push r12
+   539 0000038B 49FFC3                  inc r11
+   540                                 itosd_pop_loop_prepare:
+   541 0000038E 4939D3                  cmp r11, rdx
+   542 00000391 720E                    jb itosd_pop_loop
+   543                                 itosd_digit_overflow:
+   544 00000393 4D89DC                  mov r12, r11
+   545 00000396 4929D4                  sub r12, rdx
+   546 00000399 49FFC4                  inc r12
+   547 0000039C 4A8D24E4                lea rsp, [rsp+r12*8]
+   548 000003A0 4D29E3                  sub r11, r12
+   549                                 itosd_pop_loop:
+   550 000003A3 4983FB00                cmp r11, 0
+   551 000003A7 740F                    je itosd_pop_loop_end
+   552 000003A9 415C                    pop r12
+   553 000003AB 4983C430                add r12, "0"
+   554 000003AF 448820                  mov BYTE [rax], r12b
+   555 000003B2 48FFC0                  inc rax
+   556 000003B5 49FFCB                  dec r11
+   557 000003B8 EBE7                    jmp itosd_pop_loop
+   558                                 itosd_pop_loop_end:
+   559 000003BA 8808                    mov BYTE [rax], cl
+   560                                 itosd_end:
+   561 000003BC 415C                    pop r12
+   562 000003BE 5B                      pop rbx
+   563 000003BF C3                     ret
+   564                                 %line 7+1 ../../textbook/ch14/ovstat.asm
+   565                                 
+   566                                 
+   567                                 [section .data]
+   568                                 
+   569                                 
+   570                                 
+   571                                 
+   572                                 
+   573                                 
+   574                                 
+   575                                 
+   576                                 
+   577                                 
+   578                                 
+   579 00000000 2D36372C2D34382C20-     Csv dd "-67,-48, 57, -1,"
+   580 00000000 35372C202D312C     
+   581 00000010 2D37352C2D34302C2D-     dd "-75,-40,-93,100,"
+   582 00000010 39332C3130302C     
+   583 00000020 2033362C2035312C2D-     dd " 36, 51,-66,-81,"
+   584 00000020 36362C2D38312C     
+   585 00000030 2D32312C2038312C20-     dd "-21, 81, 15,-41,"
+   586 00000030 31352C2D34312C     
+   587 00000040 2D37382C2D36382C2D-     dd "-78,-68,-57, 22", 0
+   588 00000040 35372C203232000000-
+   589 00000040 0000               
+   590                                 
+   591                                  Del equ ","
+   592                                 
+   593                                 [section .bss]
+   594 00000000 <gap>                   Min resq 1
+   595 00000008 <gap>                   Med1 resq 1
+   596 00000010 <gap>                   Med2 resq 1
+   597 00000018 <gap>                   Max resq 1
+   598 00000020 <gap>                   Sum resq 1
+   599 00000028 <gap>                   Avg resq 1
+   600 00000030 <gap>                   Var resq 1
+   601 00000038 <gap>                   Stdv resq 1
+   602                                 
+   603                                 [section .text]
+   604                                 [global ovstat]
+   605                                 ovstat:
+   606                                 
+   607                                 
+   608                                 
+   609                                 
+   610                                 
+   611                                 
+   612                                 
+   613                                 
+   614                                 
+   615                                 
+   616                                 
+   617                                 
+   618                                 
+   619                                 
+   620                                 
+   621                                 
+   622                                 
+   623                                 
+   624                                 
+   625                                 
+   626                                 
+   627                                 
+   628                                  ovstat_Narrsz equ 1024 * 8
+   629                                 
+   630                                  ovstat_Nlocsz equ 10 * 8
+   631                                 
+   632                                 
+   633                                 %line 70+1 ../../textbook/ch14/ovstat.asm
+   634                                 
+   635                                 %line 72+1 ../../textbook/ch14/ovstat.asm
+   636                                 
+   637                                 %line 74+1 ../../textbook/ch14/ovstat.asm
+   638                                 
+   639                                 %line 84+1 ../../textbook/ch14/ovstat.asm
+   640                                 
+   641 000003C0 55                      push rbp
+   642 000003C1 4889E5                  mov rbp, rsp
+   643 000003C4 4881EC50200000          sub rsp, ovstat_Narrsz + ovstat_Nlocsz
+   644 000003CB 53                      push rbx
+   645 000003CC 4154                    push r12
+   646 000003CE 4155                    push r13
+   647                                 
+   648                                 
+   649 000003D0 4889BDE8DFFFFF          mov QWORD [rbp-ovstat_Narrsz-( 3*8)], rdi
+   650 000003D7 4889B5E0DFFFFF          mov QWORD [rbp-ovstat_Narrsz-( 4*8)], rsi
+   651 000003DE 488995D8DFFFFF          mov QWORD [rbp-ovstat_Narrsz-( 5*8)], rdx
+   652 000003E5 48898DD0DFFFFF          mov QWORD [rbp-ovstat_Narrsz-( 6*8)], rcx
+   653 000003EC 4C8985C8DFFFFF          mov QWORD [rbp-ovstat_Narrsz-( 7*8)], r8
+   654 000003F3 4C898DC0DFFFFF          mov QWORD [rbp-ovstat_Narrsz-( 8*8)], r9
+   655                                 
+   656 000003FA 488B4510                mov rax, QWORD [rbp+16]
+   657 000003FE 488985B8DFFFFF          mov QWORD [rbp-ovstat_Narrsz-( 9*8)], rax
+   658 00000405 488B4518                mov rax, QWORD [rbp+24]
+   659 00000409 488985B0DFFFFF          mov QWORD [rbp-ovstat_Narrsz-(10*8)], rax
+   660 00000410 488B4520                mov rax, QWORD [rbp+32]
+   661 00000414 488985A8DFFFFF          mov QWORD [rbp-ovstat_Narrsz-(11*8)], rax
+   662                                 
+   663                                 
+   664 0000041B 4C8BA5E8DFFFFF          mov r12, QWORD [rbp-ovstat_Narrsz-( 3*8)]
+   665 00000422 4C8DAD00E0FFFF          lea r13, QWORD [rbp-ovstat_Narrsz-( 0*8)]
+   666                                 ovstat_parse_loop:
+   667 00000429 4939ED                  cmp r13, rbp
+   668 0000042C 7454                    je ovstat_parse_loop_done
+   669                                 
+   670                                 
+   671 0000042E B12C                    mov cl, Del
+   672 00000430 48C7C280000000          mov rdx, 128
+   673 00000437 4C89E6                  mov rsi, r12
+   674 0000043A 488DBDF8DFFFFF          lea rdi, QWORD [rbp-ovstat_Narrsz-( 1*8)]
+   675 00000441 E8B5FBFFFF              call strlend
+   676 00000446 4883F800                cmp rax, 0
+   677 0000044A 0F84FC000000            jz ovstat_err
+   678                                 
+   679                                 
+   680 00000450 488B9DF8DFFFFF          mov rbx, QWORD [rbp-ovstat_Narrsz-( 1*8)]
+   681 00000457 8A0B                    mov cl, BYTE [rbx]
+   682 00000459 4889C2                  mov rdx, rax
+   683 0000045C 4C89E6                  mov rsi, r12
+   684 0000045F 4C89EF                  mov rdi, r13
+   685 00000462 E8CAFBFFFF              call stoid
+   686 00000467 4883F800                cmp rax, 0
+   687 0000046B 0F84DB000000            jz ovstat_err
+   688 00000471 4989C4                  mov r12, rax
+   689                                 
+   690                                 
+   691                                 
+   692 00000474 41803C2400              cmp BYTE [r12], 0
+   693 00000479 7407                    jz ovstat_parse_loop_done
+   694 0000047B 49FFC4                  inc r12
+   695 0000047E 4983C508                add r13, 8
+   696 00000482 EBA3                    jmp ovstat_parse_loop
+   697                                 ovstat_parse_loop_done:
+   698                                 
+   699 00000484 488D9D00E0FFFF          lea rbx, QWORD [rbp-ovstat_Narrsz-( 0*8)]
+   700 0000048B 4929DD                  sub r13, rbx
+   701 0000048E 49C1ED03                shr r13, 3
+   702 00000492 4C89ADF0DFFFFF          mov QWORD [rbp-ovstat_Narrsz-( 2*8)], r13
+   703                                 
+   704                                 
+   705 00000499 488BB5F0DFFFFF          mov rsi, QWORD [rbp-ovstat_Narrsz-( 2*8)]
+   706 000004A0 488DBD00E0FFFF          lea rdi, QWORD [rbp-ovstat_Narrsz-( 0*8)]
+   707 000004A7 E84EFCFFFF              call bubsort
+   708 000004AC 4883F800                cmp rax, 0
+   709 000004B0 0F8496000000            jz ovstat_err
+   710                                 
+   711                                 
+   712 000004B6 FFB5A8DFFFFF            push QWORD [rbp-ovstat_Narrsz-(11*8)]
+   713 000004BC FFB5B0DFFFFF            push QWORD [rbp-ovstat_Narrsz-(10*8)]
+   714 000004C2 FFB5B8DFFFFF            push QWORD [rbp-ovstat_Narrsz-( 9*8)]
+   715 000004C8 FFB5C0DFFFFF            push QWORD [rbp-ovstat_Narrsz-( 8*8)]
+   716 000004CE 4C8B8DC8DFFFFF          mov r9, QWORD [rbp-ovstat_Narrsz-( 7*8)]
+   717 000004D5 4C8B85D0DFFFFF          mov r8, QWORD [rbp-ovstat_Narrsz-( 6*8)]
+   718 000004DC 488B8DD8DFFFFF          mov rcx, QWORD [rbp-ovstat_Narrsz-( 5*8)]
+   719 000004E3 488B95E0DFFFFF          mov rdx, QWORD [rbp-ovstat_Narrsz-( 4*8)]
+   720 000004EA 488BB5F0DFFFFF          mov rsi, QWORD [rbp-ovstat_Narrsz-( 2*8)]
+   721 000004F1 488DBD00E0FFFF          lea rdi, QWORD [rbp-ovstat_Narrsz-( 0*8)]
+   722 000004F8 E8E2FCFFFF              call stats
+   723 000004FD 4883F800                cmp rax, 0
+   724 00000501 744D                    jz ovstat_err
+   725                                 
+   726                                 
+   727 00000503 488B9DE8DFFFFF          mov rbx, QWORD [rbp-ovstat_Narrsz-( 3*8)]
+   728 0000050A 4C8DA500E0FFFF          lea r12, QWORD [rbp-ovstat_Narrsz-( 0*8)]
+   729 00000511 4C8BADF0DFFFFF          mov r13, QWORD [rbp-ovstat_Narrsz-( 2*8)]
+   730                                 ovstat_marshal_loop:
+   731 00000518 4983FD00                cmp r13, 0
+   732 0000051C 7439                    je ovstat_end
+   733 0000051E 4983FD01                cmp r13, 1
+   734 00000522 7402                    je ovstat_marshal_last_elem
+   735 00000524 B12C                    mov cl, Del
+   736 00000526 EB00                    jmp ovstat_marshal_just_write_the_thing
+   737                                 ovstat_marshal_last_elem:
+   738 00000528 B100                    mov cl, 0
+   739                                 ovstat_marshal_just_write_the_thing:
+   740 0000052A 48C7C280000000          mov rdx, 128
+   741 00000531 4889DE                  mov rsi, rbx
+   742 00000534 498B3C24                mov rdi, QWORD [r12]
+   743 00000538 E8D5FDFFFF              call itosd
+   744 0000053D 4883F800                cmp rax, 0
+   745 00000541 740D                    jz ovstat_err
+   746 00000543 4889C3                  mov rbx, rax
+   747 00000546 48FFC3                  inc rbx
+   748 00000549 4983C408                add r12, 8
+   749 0000054D 49FFCD                  dec r13
+   750 00000550 EBC4                    jmp ovstat_marshal_loop
+   751                                 ovstat_err:
+   752 00000552 48C7C0FFFFFFFF          mov rax, -1
+   753                                 ovstat_end:
+   754 00000559 415D                    pop r13
+   755 0000055B 415C                    pop r12
+   756 0000055D 5B                      pop rbx
+   757 0000055E 4889EC                  mov rsp, rbp
+   758 00000561 5D                      pop rbp
+   759 00000562 C3                     ret
+   760                                 
+   761                                 [global _start]
+   762                                 _start:
+   763                                 
+   764 00000563 68[00000000]            push Stdv
+   765 00000568 68[00000000]            push Var
+   766 0000056D 68[00000000]            push Avg
+   767 00000572 49C7C1[00000000]        mov r9, Sum
+   768 00000579 49C7C0[00000000]        mov r8, Max
+   769 00000580 48C7C1[00000000]        mov rcx, Med2
+   770 00000587 48C7C2[00000000]        mov rdx, Med1
+   771 0000058E 48C7C6[00000000]        mov rsi, Min
+   772 00000595 48C7C7[00000000]        mov rdi, Csv
+   773 0000059C E81AFEFFFF              call ovstat
+   774                                 
+   775                                 
+   776 000005A1 48C7C03C000000          mov rax, SYS_exit
+   777 000005A8 48C7C700000000          mov rdi, EXIT_success
+   778 000005AF 0F05                    syscall

@@ -1,0 +1,73 @@
+     1                                 %line 1+1 ../../textbook/ch14/nisqrt_only.asm
+     2                                 [section .text]
+     3                                 [global nisqrt]
+     4                                 
+     5                                 nisqrt:
+     6                                 
+     7                                 
+     8                                 
+     9                                 
+    10                                 
+    11 00000000 53                      push rbx
+    12                                 
+    13 00000001 49C7C200000000          mov r10, 0
+    14 00000008 4989FB                  mov r11, rdi
+    15 0000000B 4C89DB                  mov rbx, r11
+    16                                 nisqrt_bin_loop:
+    17 0000000E 4C89D8                  mov rax, r11
+    18 00000011 4C29D0                  sub rax, r10
+    19 00000014 4883F801                cmp rax, 1
+    20 00000018 761D                    jbe nisqrt_bin_loop_end
+    21 0000001A 48D1E8                  shr rax, 1
+    22 0000001D 4C01D0                  add rax, r10
+    23 00000020 4889C3                  mov rbx, rax
+    24 00000023 48F7E0                  mul rax
+    25 00000026 4839F8                  cmp rax, rdi
+    26 00000029 7202                    jb nisqrt_too_low
+    27 0000002B 7705                    ja nisqrt_too_high
+    28 0000002D EB08                    jmp nisqrt_bin_loop_end
+    29                                 nisqrt_too_low:
+    30 0000002F 4989DA                  mov r10, rbx
+    31 00000032 EBD8                    jmp nisqrt_bin_loop
+    32                                 nisqrt_too_high:
+    33 00000034 4989DB                  mov r11, rbx
+    34 00000037 EBD3                    jmp nisqrt_bin_loop
+    35                                 nisqrt_bin_loop_end:
+    36 00000039 4889D8                  mov rax, rbx
+    37 0000003C 48F7E0                  mul rax
+    38 0000003F 4839F8                  cmp rax, rdi
+    39 00000042 7202                    jb nisqrt_test_incr_nearest
+    40 00000044 7721                    ja nisqrt_test_decr_nearest
+    41 00000046 EB3E                    jmp nisqrt_test_end
+    42                                 nisqrt_test_incr_nearest:
+    43 00000048 4989FA                  mov r10, rdi
+    44 0000004B 4929C2                  sub r10, rax
+    45 0000004E 4889D8                  mov rax, rbx
+    46 00000051 48FFC0                  inc rax
+    47 00000054 48F7E0                  mul rax
+    48 00000057 4989C3                  mov r11, rax
+    49 0000005A 4929FB                  sub r11, rdi
+    50 0000005D 4D39DA                  cmp r10, r11
+    51 00000060 7700                    ja nisqrt_test_accept_incr
+    52 00000062 EB22                    jmp nisqrt_test_end
+    53                                 nisqrt_test_accept_incr:
+    54 00000064 48FFC3                  inc rbx
+    55 00000067 EB1D                    jmp nisqrt_test_end
+    56                                 nisqrt_test_decr_nearest:
+    57 00000069 4989C2                  mov r10, rax
+    58 0000006C 4929C2                  sub r10, rax
+    59 0000006F 4889D8                  mov rax, rbx
+    60 00000072 48FFC8                  dec rax
+    61 00000075 48F7E0                  mul rax
+    62 00000078 4989FB                  mov r11, rdi
+    63 0000007B 4929C3                  sub r11, rax
+    64 0000007E 4D39DA                  cmp r10, r11
+    65 00000081 7700                    ja nisqrt_test_accept_decr
+    66 00000083 EB01                    jmp nisqrt_test_end
+    67                                 nisqrt_test_accept_decr:
+    68 00000085 48FFCB                  dec rbx
+    69                                 nisqrt_test_end:
+    70 00000088 4889D8                  mov rax, rbx
+    71                                 nisqrt_end:
+    72 0000008B 5B                      pop rbx
+    73 0000008C C3                     ret

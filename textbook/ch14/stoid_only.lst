@@ -1,0 +1,92 @@
+     1                                 %line 1+1 ../../textbook/ch14/stoid_only.asm
+     2                                 [section .text]
+     3                                 [global stoid]
+     4                                 stoid:
+     5                                 
+     6                                 
+     7                                 
+     8                                 
+     9                                 
+    10                                 
+    11                                 
+    12                                 
+    13                                 
+    14 00000000 53                      push rbx
+    15 00000001 4154                    push r12
+    16 00000003 4155                    push r13
+    17                                 
+    18                                 
+    19 00000005 48C7C000000000          mov rax, 0
+    20 0000000C 4883FF00                cmp rdi, 0
+    21 00000010 0F84A7000000            jz stoid_end
+    22                                 
+    23 00000016 4883FE00                cmp rsi, 0
+    24 0000001A 0F849D000000            jz stoid_end
+    25                                 
+    26 00000020 4883FA00                cmp rdx, 0
+    27 00000024 0F8493000000            jz stoid_end
+    28                                 
+    29                                 
+    30 0000002A 48C70700000000          mov QWORD [rdi], 0
+    31 00000031 4889F0                  mov rax, rsi
+    32 00000034 4989C3                  mov r11, rax
+    33 00000037 4901D3                  add r11, rdx
+    34                                 stoid_skip_space_loop:
+    35 0000003A 4C39D8                  cmp rax, r11
+    36 0000003D 0F847A000000            je stoid_end
+    37 00000043 803820                  cmp BYTE [rax], " "
+    38 00000046 7503                    jne stoid_skip_space_loop_end
+    39 00000048 48FFC0                  inc rax
+    40 0000004B EBEB                    jmp stoid_skip_space_loop
+    41                                 stoid_skip_space_loop_end:
+    42 0000004D 4989C2                  mov r10, rax
+    43                                 
+    44                                 
+    45 00000050 49C7C401000000          mov r12, 1
+    46 00000057 41803A2D                cmp BYTE [r10], "-"
+    47 0000005B 7406                    je stoid_negative
+    48 0000005D 41803A2B                cmp BYTE [r10], "+"
+    49 00000061 7407                    je stoid_positive
+    50 00000063 EB08                    jmp stoid_nosign
+    51                                 stoid_negative:
+    52 00000065 49C7C4FFFFFFFF          mov r12, -1
+    53                                 stoid_positive:
+    54 0000006C 49FFC2                  inc r10
+    55                                 stoid_nosign:
+    56                                 
+    57                                 
+    58 0000006F 48C7C30A000000          mov rbx, 10
+    59 00000076 48C7C000000000          mov rax, 0
+    60 0000007D 49C7C500000000          mov r13, 0
+    61                                 stoid_digit_loop:
+    62 00000084 4D39DA                  cmp r10, r11
+    63 00000087 742B                    je stoid_digit_loop_end
+    64 00000089 458A2A                  mov r13b, BYTE [r10]
+    65 0000008C 4138CD                  cmp r13b, cl
+    66 0000008F 7423                    je stoid_digit_loop_end
+    67 00000091 4180ED30                sub r13b, "0"
+    68                                 
+    69 00000095 4180FD00                cmp r13b, 0
+    70 00000099 7C10                    jl stoid_digit_loop_end_invalid
+    71 0000009B 4180FD09                cmp r13b, 9
+    72 0000009F 7F0A                    jg stoid_digit_loop_end_invalid
+    73                                 
+    74 000000A1 480FAFC3                imul rax, rbx
+    75 000000A5 4C01E8                  add rax, r13
+    76 000000A8 49FFC2                  inc r10
+    77 000000AB EBD5                    jmp stoid_digit_loop
+    78                                 stoid_digit_loop_end_invalid:
+    79 000000AD 48C7C000000000          mov rax, 0
+    80 000000B4 EB0B                    jmp stoid_end
+    81                                 stoid_digit_loop_end:
+    82                                 
+    83 000000B6 4989C5                  mov r13, rax
+    84 000000B9 4D0FAFEC                imul r13, r12
+    85 000000BD 4C892F                  mov QWORD [rdi], r13
+    86 000000C0 4C89D0                  mov rax, r10
+    87                                 
+    88                                 stoid_end:
+    89 000000C3 415D                    pop r13
+    90 000000C5 415C                    pop r12
+    91 000000C7 5B                      pop rbx
+    92 000000C8 C3                     ret

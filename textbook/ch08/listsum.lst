@@ -1,0 +1,36 @@
+     1                                 %line 1+1 ../../textbook/ch08/listsum.asm
+     2                                 [section .data]
+     3 00000000 010000000200000003-     List dd 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+     4 00000000 000000040000000500-
+     5 00000000 000006000000070000-
+     6 00000000 000800000009000000-
+     7 00000000 0A000000           
+     8                                  N equ 10
+     9                                 
+    10                                 [section .bss]
+    11 00000000 <gap>                   Sum resd 1
+    12 00000004 <gap>                   Avg resd 1
+    13                                 
+    14                                 [section .text]
+    15                                 [global _start]
+    16                                 
+    17                                 _start:
+    18 00000000 B800000000              mov eax, 0
+    19 00000005 B900000000              mov ecx, 0
+    20                                 sum_loop:
+    21 0000000A 03048D[00000000]        add eax, DWORD [List+rcx*4]
+    22 00000011 FFC1                    inc ecx
+    23 00000013 83F90A                  cmp ecx, N
+    24 00000016 72F0                    jb sum_loop
+    25 00000018 890425[00000000]        mov DWORD [Sum], eax
+    26                                 
+    27                                 
+    28 0000001F BA00000000              mov edx, 0
+    29 00000024 BB0A000000              mov ebx, N
+    30 00000029 F7FB                    idiv ebx
+    31 0000002B 890425[00000000]        mov DWORD [Avg], eax
+    32                                 
+    33                                 
+    34 00000032 48C7C03C000000          mov rax, 60
+    35 00000039 48C7C700000000          mov rdi, 0
+    36 00000040 0F05                    syscall

@@ -1,0 +1,33 @@
+     1                                 %line 1+1 ../../textbook/ch07/sqofsum.asm
+     2                                 [section .data]
+     3                                  N equ 10
+     4                                 
+     5                                 [section .bss]
+     6 00000000 <gap>                   SqSum resq 1
+     7                                 
+     8                                 [section .text]
+     9                                 [global _start]
+    10                                 
+    11                                 _start:
+    12                                 
+    13                                 
+    14                                 
+    15                                 
+    16                                 
+    17                                 
+    18                                 
+    19 00000000 48C7C000000000          mov rax, 0
+    20 00000007 48C7C301000000          mov rbx, 1
+    21 0000000E 48C7C10A000000          mov rcx, N
+    22                                 sum_loop:
+    23 00000015 4801D8                  add rax, rbx
+    24 00000018 48FFC3                  inc rbx
+    25 0000001B 48FFC9                  dec rcx
+    26 0000001E 4883F900                cmp rcx, 0
+    27 00000022 77EF                    ja sum_loop
+    28 00000024 48F7E0                  mul rax
+    29 00000027 48890425[00000000]      mov QWORD [SqSum], rax
+    30                                 
+    31 0000002F 48C7C03C000000          mov rax, 60
+    32 00000036 48C7C700000000          mov rdi, 0
+    33 0000003D 0F05                    syscall

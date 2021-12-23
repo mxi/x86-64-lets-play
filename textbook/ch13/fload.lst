@@ -1,0 +1,222 @@
+     1                                 %line 3+1 ../../textbook/ch13/constants.asm
+     2                                 [section .rodata]
+     3                                 
+     4                                  LF equ 0x0a
+     5                                 
+     6                                 
+     7                                  SYS_read equ 0
+     8                                  SYS_write equ 1
+     9                                  SYS_open equ 2
+    10                                  SYS_close equ 3
+    11                                  SYS_exit equ 60
+    12                                 
+    13                                 
+    14                                  SYS_stdin equ 0
+    15                                  SYS_stdout equ 1
+    16                                  SYS_stderr equ 2
+    17                                 
+    18                                 
+    19                                  O_ACCMODE equ 00000003
+    20                                  O_RDONLY equ 00000000
+    21                                  O_WRONLY equ 00000001
+    22                                  O_RDWR equ 00000002
+    23                                  O_CREAT equ 00000100
+    24                                  O_EXCL equ 00000200
+    25                                  O_NOCTTY equ 00000400
+    26                                  O_TRUNC equ 00001000
+    27                                  O_APPEND equ 00002000
+    28                                  O_NONBLOCK equ 00004000
+    29                                  O_DSYNC equ 00010000
+    30                                  FASYNC equ 00020000
+    31                                  O_DIRECT equ 00040000
+    32                                  O_LARGEFILE equ 00100000
+    33                                  O_DIRECTORY equ 00200000
+    34                                  O_NOFOLLOW equ 00400000
+    35                                  O_NOATIME equ 01000000
+    36                                  O_CLOEXEC equ 02000000
+    37                                 
+    38                                  S_IRWXU equ 00700
+    39                                  S_IRUSR equ 00400
+    40                                  S_IWUSR equ 00200
+    41                                  S_IXUSR equ 00100
+    42                                 
+    43                                  S_IRWXG equ 00070
+    44                                  S_IRGRP equ 00040
+    45                                  S_IWGRP equ 00020
+    46                                  S_IXGRP equ 00010
+    47                                 
+    48                                  S_IRWXO equ 00007
+    49                                  S_IROTH equ 00004
+    50                                  S_IWOTH equ 00002
+    51                                  S_IXOTH equ 00001
+    52                                 
+    53                                 
+    54                                  EXIT_success equ 0
+    55                                  EXIT_failure equ 1
+    56                                 %line 2+1 ../../textbook/ch13/printline_only.asm
+    57                                 
+    58                                 
+    59                                 [section .text]
+    60                                 [global printline]
+    61                                 printline:
+    62                                 
+    63                                 
+    64                                 
+    65                                 
+    66                                 
+    67                                 %line 13+1 ../../textbook/ch13/printline_only.asm
+    68 00000000 55                      push rbp
+    69 00000001 4889E5                  mov rbp, rsp
+    70 00000004 48FFCC                  dec rsp
+    71 00000007 C645FF0A                mov BYTE [rbp-1], 0x0a
+    72                                 
+    73                                 
+    74 0000000B 4883FF00                cmp rdi, 0
+    75 0000000F 743F                    jz printline_end
+    76                                 
+    77                                 
+    78 00000011 4889FE                  mov rsi, rdi
+    79                                 printline_strlen_loop:
+    80 00000014 803E00                  cmp BYTE [rsi], 0
+    81 00000017 7403                    jz printline_strlen_loop_end
+    82 00000019 48FFC6                  inc rsi
+    83 0000001C EBF4                    jmp printline_strlen_loop
+    84                                 printline_strlen_loop_end:
+    85                                 
+    86 0000001E 4889F2                  mov rdx, rsi
+    87 00000021 4829FA                  sub rdx, rdi
+    88 00000024 4889FE                  mov rsi, rdi
+    89 00000027 48C7C701000000          mov rdi, SYS_stdout
+    90 0000002E 48C7C001000000          mov rax, SYS_write
+    91 00000035 0F05                    syscall
+    92                                 
+    93 00000037 48C7C201000000          mov rdx, 1
+    94 0000003E 488D75FF                lea rsi, BYTE [rbp-1]
+    95 00000042 48C7C701000000          mov rdi, SYS_stdout
+    96 00000049 48C7C001000000          mov rax, SYS_write
+    97 00000050 0F05                    syscall
+    98                                 printline_end:
+    99 00000052 4889EC                  mov rsp, rbp
+   100 00000055 5D                      pop rbp
+   101 00000056 C3                     ret
+   102                                 %line 3+1 ../../textbook/ch13/fload.asm
+   103                                 
+   104                                 
+   105                                 [section .rodata]
+   106 00000000 6664756D702E646174-     File db "fdump.data-out", 0
+   107 00000000 612D6F757400       
+   108                                  BufSz equ 65535
+   109                                 
+   110                                 [section .bss]
+   111 00000000 <gap>                   Buf resb BufSz
+   112                                 
+   113                                 [section .text]
+   114                                 [global fload]
+   115                                 fload:
+   116                                 
+   117                                 
+   118                                 
+   119                                 
+   120                                 
+   121                                 
+   122                                 
+   123                                 
+   124                                 
+   125                                 
+   126                                 
+   127                                 
+   128                                 
+   129                                 %line 33+1 ../../textbook/ch13/fload.asm
+   130 00000057 55                      push rbp
+   131 00000058 4889E5                  mov rbp, rsp
+   132 0000005B 4883EC28                sub rsp, 40
+   133                                 
+   134                                 
+   135 0000005F 48897DF8                mov QWORD [rbp-8], rdi
+   136 00000063 488975F0                mov QWORD [rbp-16], rsi
+   137                                 
+   138 00000067 48C745E0FFFFFFFF        mov QWORD [rbp-32], -1
+   139 0000006F 48C745D800000000        mov QWORD [rbp-40], 0
+   140                                 
+   141                                 
+   142 00000077 4883FA00                cmp rdx, 0
+   143 0000007B 0F8C9E000000            jl fload_finish
+   144 00000081 4883FE00                cmp rsi, 0
+   145 00000085 7C6F                    jl fload_err_null_buf_ptr
+   146 00000087 4883FF00                cmp rdi, 0
+   147 0000008B 7C72                    jl fload_err_null_file_path
+   148                                 
+   149 0000008D 48FFCA                  dec rdx
+   150 00000090 488955E8                mov QWORD [rbp-24], rdx
+   151                                 
+   152                                 
+   153 00000094 48C7C200000000          mov rdx, 0
+   154 0000009B 48C7C600000000          mov rsi, 0
+   155 000000A2 4883CE00                or rsi, O_RDONLY
+   156                                 
+   157 000000A6 48C7C002000000          mov rax, SYS_open
+   158 000000AD 0F05                    syscall
+   159 000000AF 4883F800                cmp rax, 0
+   160 000000B3 7C65                    jl fload_err_open
+   161 000000B5 488945E0                mov QWORD [rbp-32], rax
+   162                                 
+   163                                 
+   164 000000B9 488B55E8                mov rdx, QWORD [rbp-24]
+   165 000000BD 488B75F0                mov rsi, QWORD [rbp-16]
+   166 000000C1 488B7DE0                mov rdi, QWORD [rbp-32]
+   167 000000C5 48C7C000000000          mov rax, SYS_read
+   168 000000CC 0F05                    syscall
+   169 000000CE 4883F800                cmp rax, 0
+   170 000000D2 7C34                    jl fload_err_read
+   171 000000D4 488945D8                mov QWORD [rbp-40], rax
+   172                                 
+   173                                 
+   174 000000D8 488B75F0                mov rsi, QWORD [rbp-16]
+   175 000000DC 488D3406                lea rsi, BYTE [rsi+rax]
+   176 000000E0 C60600                  mov BYTE [rsi], 0
+   177                                 
+   178                                 
+   179 000000E3 488B7DE0                mov rdi, QWORD [rbp-32]
+   180 000000E7 48C7C003000000          mov rax, SYS_close
+   181 000000EE 0F05                    syscall
+   182 000000F0 4883F800                cmp rax, 0
+   183 000000F4 7C1B                    jl fload_err_close
+   184                                 
+   185 000000F6 EB2B                    jmp fload_finish
+   186                                 fload_err_null_buf_ptr:
+   187 000000F8 48C7C0FBFFFFFF          mov rax, -5
+   188 000000FF EB26                    jmp fload_end
+   189                                 fload_err_null_file_path:
+   190 00000101 48C7C0FCFFFFFF          mov rax, -4
+   191 00000108 EB1D                    jmp fload_end
+   192                                 fload_err_read:
+   193 0000010A 48C7C0FDFFFFFF          mov rax, -3
+   194 00000111 EB14                    jmp fload_end
+   195                                 fload_err_close:
+   196 00000113 48C7C0FEFFFFFF          mov rax, -2
+   197 0000011A EB0B                    jmp fload_end
+   198                                 fload_err_open:
+   199 0000011C 48C7C0FFFFFFFF          mov rax, -1
+   200 00000123 EB02                    jmp fload_end
+   201                                 fload_finish:
+   202 00000125 488B45D8                mov rax, QWORD [rbp-40]
+   203                                 fload_end:
+   204 00000129 4889EC                  mov rsp, rbp
+   205 0000012C 5D                      pop rbp
+   206 0000012D C3                     ret
+   207                                 
+   208                                 [global _start]
+   209                                 _start:
+   210 0000012E 48C7C2FFFF0000          mov rdx, BufSz
+   211 00000135 48C7C6[00000000]        mov rsi, Buf
+   212 0000013C 48C7C7[00000000]        mov rdi, File
+   213 00000143 E80AFFFFFF              call fload
+   214                                 
+   215                                 
+   216 00000148 48C7C7[00000000]        mov rdi, Buf
+   217 0000014F E8A7FEFFFF              call printline
+   218                                 
+   219                                 
+   220 00000154 48C7C03C000000          mov rax, SYS_exit
+   221 0000015B 48C7C700000000          mov rdi, EXIT_success
+   222 00000162 0F05                    syscall

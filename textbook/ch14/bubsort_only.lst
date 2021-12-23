@@ -1,0 +1,46 @@
+     1                                 %line 1+1 ../../textbook/ch14/bubsort_only.asm
+     2                                 [section .text]
+     3                                 [global bubsort]
+     4                                 
+     5                                 bubsort:
+     6                                 
+     7                                 
+     8                                 
+     9                                 
+    10                                 
+    11                                 
+    12                                 
+    13                                 
+    14 00000000 48C7C000000000          mov rax, 0
+    15 00000007 4883FF00                cmp rdi, 0
+    16 0000000B 7448                    jz bubsort_end
+    17                                 
+    18 0000000D 4883FE00                cmp rsi, 0
+    19 00000011 7442                    jz bubsort_end
+    20                                 
+    21                                 
+    22 00000013 4889F8                  mov rax, rdi
+    23 00000016 4889F1                  mov rcx, rsi
+    24 00000019 48FFC9                  dec rcx
+    25                                 bubsort_pass_loop:
+    26 0000001C 49C7C000000000          mov r8, 0
+    27 00000023 48C7C700000000          mov rdi, 0
+    28                                 bubsort_swap_loop:
+    29 0000002A 4839CF                  cmp rdi, rcx
+    30 0000002D 731E                    jae bubsort_swap_loop_end
+    31 0000002F 4C8B14F8                mov r10, QWORD [rax+rdi*8]
+    32 00000033 4C8B5CF808              mov r11, QWORD [rax+rdi*8+8]
+    33 00000038 4D39DA                  cmp r10, r11
+    34 0000003B 7E0B                    jle bubsort_noswap
+    35 0000003D 4C891CF8                mov QWORD [rax+rdi*8], r11
+    36 00000041 4C8954F808              mov QWORD [rax+rdi*8+8], r10
+    37 00000046 4983C801                or r8, 1
+    38                                 bubsort_noswap:
+    39 0000004A 48FFC7                  inc rdi
+    40 0000004D EBD9                    jmp bubsort_swap_loop
+    41                                 bubsort_swap_loop_end:
+    42 0000004F 4983F800                cmp r8, 0
+    43 00000053 7400                    jz bubsort_end
+    44 00000055 E2C3                    loop bubsort_pass_loop
+    45                                 bubsort_end:
+    46 00000057 C3                     ret

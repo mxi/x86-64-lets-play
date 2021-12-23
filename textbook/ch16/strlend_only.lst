@@ -1,0 +1,40 @@
+     1                                 %line 1+1 ../../textbook/ch16/strlend_only.asm
+     2                                 [section .text]
+     3                                 [global strlend]
+     4                                 strlend:
+     5                                 
+     6                                 
+     7                                 
+     8                                 
+     9                                 
+    10                                 
+    11                                 
+    12                                 
+    13                                 
+    14                                 
+    15                                 
+    16                                 
+    17 00000000 48C7C000000000          mov rax, 0
+    18 00000007 4989F2                  mov r10, rsi
+    19 0000000A 4883FE00                cmp rsi, 0
+    20 0000000E 741A                    jz strlend_finish
+    21                                 
+    22 00000010 4883FA00                cmp rdx, 0
+    23 00000014 7414                    jz strlend_finish
+    24                                 
+    25                                 strlend_loop:
+    26 00000016 41803A00                cmp BYTE [r10], 0
+    27 0000001A 7408                    je strlend_loop_end
+    28 0000001C 41380A                  cmp BYTE [r10], cl
+    29 0000001F 7403                    je strlend_loop_end
+    30 00000021 49FFC2                  inc r10
+    31 00000024 EBEE                    jmp strlend_loop
+    32                                 strlend_loop_end:
+    33 00000026 4C89D0                  mov rax, r10
+    34 00000029 4829F0                  sub rax, rsi
+    35                                 strlend_finish:
+    36 0000002C 4883FF00                cmp rdi, 0
+    37 00000030 7401                    jz strlend_end
+    38 00000032 4C8917                  mov QWORD [rdi], r10
+    39                                 strlend_end:
+    40 00000035 C3                     ret

@@ -1,0 +1,103 @@
+     1                                 %line 1+1 ../../textbook/ch07/2.asm
+     2                                 [section .data]
+     3 00000000 F9                      bNum1 db -7
+     4 00000001 F5                      bNum2 db -11
+     5 00000002 F3                      bNum3 db -13
+     6 00000003 EF                      bNum4 db -17
+     7                                 
+     8                                 [section .bss]
+     9                                 
+    10 00000000 <gap>                   bAns1 resb 1
+    11 00000001 <gap>                   bAns2 resb 1
+    12 00000002 <gap>                   bAns3 resb 1
+    13                                 
+    14 00000003 <gap>                   bAns6 resb 1
+    15 00000004 <gap>                   bAns7 resb 1
+    16 00000005 <gap>                   bAns8 resb 1
+    17                                 
+    18 00000006 <gap>                   wAns11 resw 1
+    19 00000008 <gap>                   wAns12 resw 1
+    20 0000000A <gap>                   wAns13 resw 1
+    21                                 
+    22 0000000C <gap>                   bAns16 resb 1
+    23 0000000D <gap>                   bAns17 resb 1
+    24 0000000E <gap>                   bAns18 resb 1
+    25                                 
+    26 0000000F <gap>                   bRem18 resb 1
+    27                                 
+    28                                 [section .text]
+    29                                 [global _start]
+    30                                 
+    31                                 _start:
+    32                                 
+    33                                 
+    34 00000000 8A0425[00000000]        mov al, BYTE [bNum1]
+    35 00000007 020425[00000000]        add al, BYTE [bNum2]
+    36 0000000E 880425[00000000]        mov BYTE [bAns1], al
+    37                                 
+    38                                 
+    39 00000015 8A0425[00000000]        mov al, BYTE [bNum1]
+    40 0000001C 020425[00000000]        add al, BYTE [bNum3]
+    41 00000023 880425[00000000]        mov BYTE [bAns2], al
+    42                                 
+    43                                 
+    44 0000002A 8A0425[00000000]        mov al, BYTE [bNum3]
+    45 00000031 020425[00000000]        add al, BYTE [bNum4]
+    46 00000038 880425[00000000]        mov BYTE [bAns3], al
+    47                                 
+    48                                 
+    49 0000003F 8A0425[00000000]        mov al, BYTE [bNum1]
+    50 00000046 2A0425[00000000]        sub al, BYTE [bNum2]
+    51 0000004D 880425[00000000]        mov BYTE [bAns6], al
+    52                                 
+    53                                 
+    54 00000054 8A0425[00000000]        mov al, BYTE [bNum1]
+    55 0000005B 2A0425[00000000]        sub al, BYTE [bNum3]
+    56 00000062 880425[00000000]        mov BYTE [bAns7], al
+    57                                 
+    58                                 
+    59 00000069 8A0425[00000000]        mov al, BYTE [bNum2]
+    60 00000070 2A0425[00000000]        sub al, BYTE [bNum4]
+    61 00000077 880425[00000000]        mov BYTE [bAns8], al
+    62                                 
+    63                                 
+    64 0000007E 8A0425[00000000]        mov al, BYTE [bNum1]
+    65 00000085 F62C25[00000000]        imul BYTE [bNum3]
+    66 0000008C 66890425[00000000]      mov WORD [wAns11], ax
+    67                                 
+    68                                 
+    69 00000094 8A0425[00000000]        mov al, BYTE [bNum2]
+    70 0000009B F6E8                    imul al
+    71 0000009D 66890425[00000000]      mov WORD [wAns12], ax
+    72                                 
+    73                                 
+    74 000000A5 8A0425[00000000]        mov al, BYTE [bNum2]
+    75 000000AC F62C25[00000000]        imul BYTE [bNum4]
+    76 000000B3 66890425[00000000]      mov WORD [wAns13], ax
+    77                                 
+    78                                 
+    79 000000BB 8A0425[00000000]        mov al, BYTE [bNum2]
+    80 000000C2 6698                    cbw
+    81 000000C4 F63C25[00000000]        idiv BYTE [bNum1]
+    82 000000CB 880425[00000000]        mov BYTE [bAns16], al
+    83                                 
+    84                                 
+    85 000000D2 8A0425[00000000]        mov al, BYTE [bNum4]
+    86 000000D9 6698                    cbw
+    87 000000DB F63C25[00000000]        idiv BYTE [bNum3]
+    88 000000E2 880425[00000000]        mov BYTE [bAns17], al
+    89                                 
+    90                                 
+    91 000000E9 8A0425[00000000]        mov al, BYTE [bNum4]
+    92 000000F0 6698                    cbw
+    93 000000F2 F63C25[00000000]        idiv BYTE [bNum1]
+    94 000000F9 880425[00000000]        mov BYTE [bAns18], al
+    95                                 
+    96                                 
+    97 00000100 882425[00000000]        mov BYTE [bRem18], ah
+    98                                 
+    99                                 
+   100 00000107 48C7C03C000000          mov rax, 60
+   101 0000010E 48C7C700000000          mov rdi, 0
+   102 00000115 0F05                    syscall
+   103                                 

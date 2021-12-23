@@ -1,0 +1,40 @@
+     1                                 %line 1+1 ../../textbook/ch07/fib.asm
+     2                                 [section .data]
+     3                                 
+     4 00000000 0000000000000000        Nth dq 0
+     5                                  N equ 10
+     6                                 
+     7                                 
+     8                                  SYS_EXIT equ 60
+     9                                  EXIT_SUCCESS equ 0
+    10                                 
+    11                                 [section .text]
+    12                                 [global _start]
+    13                                 
+    14                                 _start:
+    15                                 
+    16                                 
+    17                                 
+    18                                 
+    19                                 
+    20                                 
+    21                                 
+    22 00000000 49C7C000000000          mov r8, 0
+    23 00000007 49C7C101000000          mov r9, 1
+    24 0000000E 48C7C10A000000          mov rcx, N
+    25                                 loop_start:
+    26                                 
+    27 00000015 4C89C0                  mov rax, r8
+    28 00000018 4C01C8                  add rax, r9
+    29                                 
+    30 0000001B 4D89C8                  mov r8, r9
+    31 0000001E 4989C1                  mov r9, rax
+    32 00000021 48FFC9                  dec rcx
+    33                                 
+    34 00000024 4883F900                cmp rcx, 0
+    35 00000028 77E9                    ja loop_start
+    36 0000002A 4C890425[00000000]      mov QWORD [Nth], r8
+    37                                 prog_end:
+    38 00000032 48C7C03C000000          mov rax, SYS_EXIT
+    39 00000039 48C7C700000000          mov rdi, EXIT_SUCCESS
+    40 00000040 0F05                    syscall

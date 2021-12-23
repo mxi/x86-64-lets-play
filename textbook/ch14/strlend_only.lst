@@ -1,0 +1,41 @@
+     1                                 %line 1+1 ../../textbook/ch14/strlend_only.asm
+     2                                 [section .text]
+     3                                 [global strlend]
+     4                                 
+     5                                 strlend:
+     6                                 
+     7                                 
+     8                                 
+     9                                 
+    10                                 
+    11                                 
+    12                                 
+    13                                 
+    14                                 
+    15                                 
+    16                                 
+    17                                 
+    18 00000000 48C7C000000000          mov rax, 0
+    19 00000007 4989F2                  mov r10, rsi
+    20 0000000A 4883FE00                cmp rsi, 0
+    21 0000000E 741A                    jz strlend_finish
+    22                                 
+    23 00000010 4883FA00                cmp rdx, 0
+    24 00000014 7414                    jz strlend_finish
+    25                                 
+    26                                 strlend_loop:
+    27 00000016 41803A00                cmp BYTE [r10], 0
+    28 0000001A 7408                    je strlend_loop_end
+    29 0000001C 41380A                  cmp BYTE [r10], cl
+    30 0000001F 7403                    je strlend_loop_end
+    31 00000021 49FFC2                  inc r10
+    32 00000024 EBEE                    jmp strlend_loop
+    33                                 strlend_loop_end:
+    34 00000026 4C89D0                  mov rax, r10
+    35 00000029 4829F0                  sub rax, rsi
+    36                                 strlend_finish:
+    37 0000002C 4883FF00                cmp rdi, 0
+    38 00000030 7401                    jz strlend_end
+    39 00000032 4C8917                  mov QWORD [rdi], r10
+    40                                 strlend_end:
+    41 00000035 C3                     ret

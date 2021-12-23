@@ -1,0 +1,32 @@
+     1                                 %line 1+1 ../../textbook/ch07/prog.asm
+     2                                 [section .data]
+     3 00000000 0A00000000000000        limit dq 10
+     4 00000008 0000000000000000        sq_sum dq 0
+     5                                 
+     6                                  SYS_EXIT equ 60
+     7                                  EXIT_SUCCESS equ 0
+     8                                 
+     9                                 [section .text]
+    10                                 [global _start]
+    11                                 
+    12                                 _start:
+    13 00000000 488B0C25[00000000]      mov rcx, QWORD [limit]
+    14 00000008 48C7C301000000          mov rbx, 1
+    15                                 loop_start:
+    16                                 
+    17                                 
+    18                                 
+    19                                 
+    20                                 
+    21 0000000F 4889D8                  mov rax, rbx
+    22 00000012 48F7E0                  mul rax
+    23 00000015 48010425[00000000]      add QWORD [sq_sum], rax
+    24 0000001D 48FFC3                  inc rbx
+    25 00000020 48FFC9                  dec rcx
+    26 00000023 4883F900                cmp rcx, 0
+    27 00000027 75E4                    jne loop_start
+    28                                 
+    29                                 prog_exit:
+    30 00000029 48C7C03C000000          mov rax, SYS_EXIT
+    31 00000030 48C7C700000000          mov rdi, EXIT_SUCCESS
+    32 00000037 0F05                    syscall

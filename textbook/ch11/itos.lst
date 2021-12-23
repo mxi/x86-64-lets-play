@@ -1,0 +1,202 @@
+     1                                 %line 36+1 ../../textbook/ch11/itos.asm
+     2                                 
+     3                                 
+     4                                 [section .data]
+     5 00000000 964C50FEFFFFFFFF        Num1 dq - 28291946
+     6 00000008 A1CAF51700000000        Num2 dq 401984161
+     7 00000010 A4815D0400000000        Num3 dq 73236900
+     8 00000018 C374ABE2FFFFFFFF        Num4 dq -492079933
+     9 00000020 EB09E90B00000000        Num5 dq 199821803
+    10                                 
+    11                                 [section .bss]
+    12 00000000 <gap>                   Buffer1 resb 32
+    13 00000020 <gap>                   Buffer2 resb 32
+    14 00000040 <gap>                   Buffer3 resb 32
+    15 00000060 <gap>                   Buffer4 resb 32
+    16 00000080 <gap>                   Buffer5 resb 32
+    17                                 
+    18                                 
+    19                                 [section .text]
+    20                                 [global _start]
+    21                                 
+    22                                 _start:
+    23                                 
+    24                                 %line 57+0 ../../textbook/ch11/itos.asm
+    25                                 
+    26                                 
+    27                                 
+    28 00000000 48C7C300000000          mov rbx, 0
+    29 00000007 48C7C70A000000          mov rdi, 10
+    30 0000000E 48C7C100000000          mov rcx, 0
+    31 00000015 488B0425[00000000]      mov rax, QWORD [Num1]
+    32 0000001D 4883F800                cmp rax, 0
+    33 00000021 7D08                    jge ..@4.push_loop
+    34 00000023 48C7C301000000          mov rbx, 1
+    35 0000002A 48F7D8                  neg rax
+    36                                 ..@4.push_loop:
+    37 0000002D 4899                    cqo
+    38 0000002F 48F7F7                  div rdi
+    39 00000032 52                      push rdx
+    40 00000033 48FFC1                  inc rcx
+    41 00000036 4883F800                cmp rax, 0
+    42 0000003A 7FEF                    jg ..@4.push_loop
+    43                                 
+    44                                 
+    45 0000003C 48C7C600000000          mov rsi, 0
+    46 00000043 4883FB00                cmp rbx, 0
+    47 00000047 7408                    je ..@4.pop_loop
+    48 00000049 C686[00000000]2D        mov BYTE [Buffer1+rsi], "-"
+    49 00000050 48FFC6                  inc rsi
+    50                                 ..@4.pop_loop:
+    51 00000053 5A                      pop rdx
+    52 00000054 4883C230                add rdx, 0x30
+    53 00000058 8896[00000000]          mov BYTE [Buffer1+rsi], dl
+    54 0000005E 48FFC6                  inc rsi
+    55 00000061 E2EE                    loop ..@4.pop_loop
+    56 00000063 C686[00000000]00        mov BYTE [Buffer1+rsi], 0
+    57                                 %line 58+1 ../../textbook/ch11/itos.asm
+    58                                 
+    59                                 %line 58+0 ../../textbook/ch11/itos.asm
+    60                                 
+    61                                 
+    62                                 
+    63 0000006A 48C7C300000000          mov rbx, 0
+    64 00000071 48C7C70A000000          mov rdi, 10
+    65 00000078 48C7C100000000          mov rcx, 0
+    66 0000007F 488B0425[00000000]      mov rax, QWORD [Num2]
+    67 00000087 4883F800                cmp rax, 0
+    68 0000008B 7D08                    jge ..@5.push_loop
+    69 0000008D 48C7C301000000          mov rbx, 1
+    70 00000094 48F7D8                  neg rax
+    71                                 ..@5.push_loop:
+    72 00000097 4899                    cqo
+    73 00000099 48F7F7                  div rdi
+    74 0000009C 52                      push rdx
+    75 0000009D 48FFC1                  inc rcx
+    76 000000A0 4883F800                cmp rax, 0
+    77 000000A4 7FEF                    jg ..@5.push_loop
+    78                                 
+    79                                 
+    80 000000A6 48C7C600000000          mov rsi, 0
+    81 000000AD 4883FB00                cmp rbx, 0
+    82 000000B1 7408                    je ..@5.pop_loop
+    83 000000B3 C686[00000000]2D        mov BYTE [Buffer2+rsi], "-"
+    84 000000BA 48FFC6                  inc rsi
+    85                                 ..@5.pop_loop:
+    86 000000BD 5A                      pop rdx
+    87 000000BE 4883C230                add rdx, 0x30
+    88 000000C2 8896[00000000]          mov BYTE [Buffer2+rsi], dl
+    89 000000C8 48FFC6                  inc rsi
+    90 000000CB E2EE                    loop ..@5.pop_loop
+    91 000000CD C686[00000000]00        mov BYTE [Buffer2+rsi], 0
+    92                                 %line 59+1 ../../textbook/ch11/itos.asm
+    93                                 
+    94                                 %line 59+0 ../../textbook/ch11/itos.asm
+    95                                 
+    96                                 
+    97                                 
+    98 000000D4 48C7C300000000          mov rbx, 0
+    99 000000DB 48C7C70A000000          mov rdi, 10
+   100 000000E2 48C7C100000000          mov rcx, 0
+   101 000000E9 488B0425[00000000]      mov rax, QWORD [Num3]
+   102 000000F1 4883F800                cmp rax, 0
+   103 000000F5 7D08                    jge ..@6.push_loop
+   104 000000F7 48C7C301000000          mov rbx, 1
+   105 000000FE 48F7D8                  neg rax
+   106                                 ..@6.push_loop:
+   107 00000101 4899                    cqo
+   108 00000103 48F7F7                  div rdi
+   109 00000106 52                      push rdx
+   110 00000107 48FFC1                  inc rcx
+   111 0000010A 4883F800                cmp rax, 0
+   112 0000010E 7FEF                    jg ..@6.push_loop
+   113                                 
+   114                                 
+   115 00000110 48C7C600000000          mov rsi, 0
+   116 00000117 4883FB00                cmp rbx, 0
+   117 0000011B 7408                    je ..@6.pop_loop
+   118 0000011D C686[00000000]2D        mov BYTE [Buffer3+rsi], "-"
+   119 00000124 48FFC6                  inc rsi
+   120                                 ..@6.pop_loop:
+   121 00000127 5A                      pop rdx
+   122 00000128 4883C230                add rdx, 0x30
+   123 0000012C 8896[00000000]          mov BYTE [Buffer3+rsi], dl
+   124 00000132 48FFC6                  inc rsi
+   125 00000135 E2EE                    loop ..@6.pop_loop
+   126 00000137 C686[00000000]00        mov BYTE [Buffer3+rsi], 0
+   127                                 %line 60+1 ../../textbook/ch11/itos.asm
+   128                                 
+   129                                 %line 60+0 ../../textbook/ch11/itos.asm
+   130                                 
+   131                                 
+   132                                 
+   133 0000013E 48C7C300000000          mov rbx, 0
+   134 00000145 48C7C70A000000          mov rdi, 10
+   135 0000014C 48C7C100000000          mov rcx, 0
+   136 00000153 488B0425[00000000]      mov rax, QWORD [Num4]
+   137 0000015B 4883F800                cmp rax, 0
+   138 0000015F 7D08                    jge ..@7.push_loop
+   139 00000161 48C7C301000000          mov rbx, 1
+   140 00000168 48F7D8                  neg rax
+   141                                 ..@7.push_loop:
+   142 0000016B 4899                    cqo
+   143 0000016D 48F7F7                  div rdi
+   144 00000170 52                      push rdx
+   145 00000171 48FFC1                  inc rcx
+   146 00000174 4883F800                cmp rax, 0
+   147 00000178 7FEF                    jg ..@7.push_loop
+   148                                 
+   149                                 
+   150 0000017A 48C7C600000000          mov rsi, 0
+   151 00000181 4883FB00                cmp rbx, 0
+   152 00000185 7408                    je ..@7.pop_loop
+   153 00000187 C686[00000000]2D        mov BYTE [Buffer4+rsi], "-"
+   154 0000018E 48FFC6                  inc rsi
+   155                                 ..@7.pop_loop:
+   156 00000191 5A                      pop rdx
+   157 00000192 4883C230                add rdx, 0x30
+   158 00000196 8896[00000000]          mov BYTE [Buffer4+rsi], dl
+   159 0000019C 48FFC6                  inc rsi
+   160 0000019F E2EE                    loop ..@7.pop_loop
+   161 000001A1 C686[00000000]00        mov BYTE [Buffer4+rsi], 0
+   162                                 %line 61+1 ../../textbook/ch11/itos.asm
+   163                                 
+   164                                 %line 61+0 ../../textbook/ch11/itos.asm
+   165                                 
+   166                                 
+   167                                 
+   168 000001A8 48C7C300000000          mov rbx, 0
+   169 000001AF 48C7C70A000000          mov rdi, 10
+   170 000001B6 48C7C100000000          mov rcx, 0
+   171 000001BD 488B0425[00000000]      mov rax, QWORD [Num5]
+   172 000001C5 4883F800                cmp rax, 0
+   173 000001C9 7D08                    jge ..@8.push_loop
+   174 000001CB 48C7C301000000          mov rbx, 1
+   175 000001D2 48F7D8                  neg rax
+   176                                 ..@8.push_loop:
+   177 000001D5 4899                    cqo
+   178 000001D7 48F7F7                  div rdi
+   179 000001DA 52                      push rdx
+   180 000001DB 48FFC1                  inc rcx
+   181 000001DE 4883F800                cmp rax, 0
+   182 000001E2 7FEF                    jg ..@8.push_loop
+   183                                 
+   184                                 
+   185 000001E4 48C7C600000000          mov rsi, 0
+   186 000001EB 4883FB00                cmp rbx, 0
+   187 000001EF 7408                    je ..@8.pop_loop
+   188 000001F1 C686[00000000]2D        mov BYTE [Buffer5+rsi], "-"
+   189 000001F8 48FFC6                  inc rsi
+   190                                 ..@8.pop_loop:
+   191 000001FB 5A                      pop rdx
+   192 000001FC 4883C230                add rdx, 0x30
+   193 00000200 8896[00000000]          mov BYTE [Buffer5+rsi], dl
+   194 00000206 48FFC6                  inc rsi
+   195 00000209 E2EE                    loop ..@8.pop_loop
+   196 0000020B C686[00000000]00        mov BYTE [Buffer5+rsi], 0
+   197                                 %line 62+1 ../../textbook/ch11/itos.asm
+   198                                 
+   199                                 
+   200 00000212 48C7C03C000000          mov rax, 60
+   201 00000219 48C7C700000000          mov rdi, 0
+   202 00000220 0F05                    syscall

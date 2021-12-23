@@ -1,0 +1,75 @@
+     1                                 %line 1+1 ../../textbook/ch16/itosd_only.asm
+     2                                 [section .text]
+     3                                 [global itosd]
+     4                                 itosd:
+     5                                 
+     6                                 
+     7                                 
+     8                                 
+     9                                 
+    10                                 
+    11                                 
+    12                                 
+    13 00000000 53                      push rbx
+    14 00000001 4154                    push r12
+    15                                 
+    16                                 
+    17 00000003 48C7C000000000          mov rax, 0
+    18 0000000A 4883FE00                cmp rsi, 0
+    19 0000000E 0F848B000000            jz itosd_end
+    20                                 
+    21 00000014 4883FA00                cmp rdx, 0
+    22 00000018 0F8481000000            jz itosd_end
+    23                                 
+    24                                 
+    25 0000001E 4989D4                  mov r12, rdx
+    26 00000021 48C7C30A000000          mov rbx, 10
+    27 00000028 49C7C200000000          mov r10, 0
+    28 0000002F 49C7C300000000          mov r11, 0
+    29 00000036 4889F8                  mov rax, rdi
+    30 00000039 4883F800                cmp rax, 0
+    31 0000003D 7D08                    jge itosd_push_loop
+    32 0000003F 49C7C201000000          mov r10, 1
+    33 00000046 48F7D8                  neg rax
+    34                                 itosd_push_loop:
+    35 00000049 4899                    cqo
+    36 0000004B 48F7F3                  div rbx
+    37 0000004E 52                      push rdx
+    38 0000004F 49FFC3                  inc r11
+    39 00000052 4883F800                cmp rax, 0
+    40 00000056 77EF                    ja itosd_push_loop
+    41 00000058 4C89E2                  mov rdx, r12
+    42                                 
+    43                                 
+    44 0000005B 4889F0                  mov rax, rsi
+    45 0000005E 4983FA00                cmp r10, 0
+    46 00000062 7411                    je itosd_pop_loop_prepare
+    47 00000064 49C7C400000000          mov r12, 0
+    48 0000006B 41B42D                  mov r12b, "-"
+    49 0000006E 4983EC30                sub r12, "0"
+    50 00000072 4154                    push r12
+    51 00000074 49FFC3                  inc r11
+    52                                 itosd_pop_loop_prepare:
+    53 00000077 4939D3                  cmp r11, rdx
+    54 0000007A 720E                    jb itosd_pop_loop
+    55                                 itosd_digit_overflow:
+    56 0000007C 4D89DC                  mov r12, r11
+    57 0000007F 4929D4                  sub r12, rdx
+    58 00000082 49FFC4                  inc r12
+    59 00000085 4A8D24E4                lea rsp, [rsp+r12*8]
+    60 00000089 4D29E3                  sub r11, r12
+    61                                 itosd_pop_loop:
+    62 0000008C 4983FB00                cmp r11, 0
+    63 00000090 740F                    je itosd_pop_loop_end
+    64 00000092 415C                    pop r12
+    65 00000094 4983C430                add r12, "0"
+    66 00000098 448820                  mov BYTE [rax], r12b
+    67 0000009B 48FFC0                  inc rax
+    68 0000009E 49FFCB                  dec r11
+    69 000000A1 EBE7                    jmp itosd_pop_loop
+    70                                 itosd_pop_loop_end:
+    71 000000A3 8808                    mov BYTE [rax], cl
+    72                                 itosd_end:
+    73 000000A5 415C                    pop r12
+    74 000000A7 5B                      pop rbx
+    75 000000A8 C3                     ret

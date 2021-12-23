@@ -1,0 +1,75 @@
+     1                                 %line 5+1 ../../textbook/ch12/nisqrt_alone.asm
+     2                                 
+     3                                 
+     4                                 [section .text]
+     5                                 [global nisqrt]
+     6                                 
+     7                                 nisqrt:
+     8                                 
+     9                                 
+    10                                 
+    11                                 
+    12                                 
+    13 00000000 53                      push rbx
+    14                                 
+    15 00000001 49C7C200000000          mov r10, 0
+    16 00000008 4989FB                  mov r11, rdi
+    17 0000000B 4C89DB                  mov rbx, r11
+    18                                 nisqrt_bin_loop:
+    19 0000000E 4C89D8                  mov rax, r11
+    20 00000011 4C29D0                  sub rax, r10
+    21 00000014 4883F801                cmp rax, 1
+    22 00000018 761D                    jbe nisqrt_bin_loop_end
+    23 0000001A 48D1E8                  shr rax, 1
+    24 0000001D 4C01D0                  add rax, r10
+    25 00000020 4889C3                  mov rbx, rax
+    26 00000023 48F7E0                  mul rax
+    27 00000026 4839F8                  cmp rax, rdi
+    28 00000029 7202                    jb nisqrt_too_low
+    29 0000002B 7705                    ja nisqrt_too_high
+    30 0000002D EB08                    jmp nisqrt_bin_loop_end
+    31                                 nisqrt_too_low:
+    32 0000002F 4989DA                  mov r10, rbx
+    33 00000032 EBD8                    jmp nisqrt_bin_loop
+    34                                 nisqrt_too_high:
+    35 00000034 4989DB                  mov r11, rbx
+    36 00000037 EBD3                    jmp nisqrt_bin_loop
+    37                                 nisqrt_bin_loop_end:
+    38 00000039 4889D8                  mov rax, rbx
+    39 0000003C 48F7E0                  mul rax
+    40 0000003F 4839F8                  cmp rax, rdi
+    41 00000042 7202                    jb nisqrt_test_incr_nearest
+    42 00000044 7721                    ja nisqrt_test_decr_nearest
+    43 00000046 EB3E                    jmp nisqrt_test_end
+    44                                 nisqrt_test_incr_nearest:
+    45 00000048 4989FA                  mov r10, rdi
+    46 0000004B 4929C2                  sub r10, rax
+    47 0000004E 4889D8                  mov rax, rbx
+    48 00000051 48FFC0                  inc rax
+    49 00000054 48F7E0                  mul rax
+    50 00000057 4989C3                  mov r11, rax
+    51 0000005A 4929FB                  sub r11, rdi
+    52 0000005D 4D39DA                  cmp r10, r11
+    53 00000060 7700                    ja nisqrt_test_accept_incr
+    54 00000062 EB22                    jmp nisqrt_test_end
+    55                                 nisqrt_test_accept_incr:
+    56 00000064 48FFC3                  inc rbx
+    57 00000067 EB1D                    jmp nisqrt_test_end
+    58                                 nisqrt_test_decr_nearest:
+    59 00000069 4989C2                  mov r10, rax
+    60 0000006C 4929C2                  sub r10, rax
+    61 0000006F 4889D8                  mov rax, rbx
+    62 00000072 48FFC8                  dec rax
+    63 00000075 48F7E0                  mul rax
+    64 00000078 4989FB                  mov r11, rdi
+    65 0000007B 4929C3                  sub r11, rax
+    66 0000007E 4D39DA                  cmp r10, r11
+    67 00000081 7700                    ja nisqrt_test_accept_decr
+    68 00000083 EB01                    jmp nisqrt_test_end
+    69                                 nisqrt_test_accept_decr:
+    70 00000085 48FFCB                  dec rbx
+    71                                 nisqrt_test_end:
+    72 00000088 4889D8                  mov rax, rbx
+    73                                 nisqrt_end:
+    74 0000008B 5B                      pop rbx
+    75 0000008C C3                     ret

@@ -1,0 +1,221 @@
+     1                                 %line 3+1 ../../textbook/ch13/constants.asm
+     2                                 [section .rodata]
+     3                                 
+     4                                  LF equ 0x0a
+     5                                 
+     6                                 
+     7                                  SYS_read equ 0
+     8                                  SYS_write equ 1
+     9                                  SYS_open equ 2
+    10                                  SYS_close equ 3
+    11                                  SYS_exit equ 60
+    12                                 
+    13                                 
+    14                                  SYS_stdin equ 0
+    15                                  SYS_stdout equ 1
+    16                                  SYS_stderr equ 2
+    17                                 
+    18                                 
+    19                                  O_ACCMODE equ 00000003
+    20                                  O_RDONLY equ 00000000
+    21                                  O_WRONLY equ 00000001
+    22                                  O_RDWR equ 00000002
+    23                                  O_CREAT equ 00000100
+    24                                  O_EXCL equ 00000200
+    25                                  O_NOCTTY equ 00000400
+    26                                  O_TRUNC equ 00001000
+    27                                  O_APPEND equ 00002000
+    28                                  O_NONBLOCK equ 00004000
+    29                                  O_DSYNC equ 00010000
+    30                                  FASYNC equ 00020000
+    31                                  O_DIRECT equ 00040000
+    32                                  O_LARGEFILE equ 00100000
+    33                                  O_DIRECTORY equ 00200000
+    34                                  O_NOFOLLOW equ 00400000
+    35                                  O_NOATIME equ 01000000
+    36                                  O_CLOEXEC equ 02000000
+    37                                 
+    38                                  S_IRWXU equ 00700
+    39                                  S_IRUSR equ 00400
+    40                                  S_IWUSR equ 00200
+    41                                  S_IXUSR equ 00100
+    42                                 
+    43                                  S_IRWXG equ 00070
+    44                                  S_IRGRP equ 00040
+    45                                  S_IWGRP equ 00020
+    46                                  S_IXGRP equ 00010
+    47                                 
+    48                                  S_IRWXO equ 00007
+    49                                  S_IROTH equ 00004
+    50                                  S_IWOTH equ 00002
+    51                                  S_IXOTH equ 00001
+    52                                 
+    53                                 
+    54                                  EXIT_success equ 0
+    55                                  EXIT_failure equ 1
+    56                                 %line 1+1 ../../textbook/ch13/strlend_only.asm
+    57                                 [section .text]
+    58                                 [global strlend]
+    59                                 strlend:
+    60                                 
+    61                                 
+    62                                 
+    63                                 
+    64                                 
+    65                                 
+    66                                 
+    67                                 
+    68                                 
+    69                                 
+    70                                 
+    71                                 
+    72 00000000 48C7C000000000          mov rax, 0
+    73 00000007 4989F2                  mov r10, rsi
+    74 0000000A 4883FE00                cmp rsi, 0
+    75 0000000E 741A                    jz strlend_finish
+    76                                 
+    77 00000010 4883FA00                cmp rdx, 0
+    78 00000014 7414                    jz strlend_finish
+    79                                 
+    80                                 strlend_loop:
+    81 00000016 41803A00                cmp BYTE [r10], 0
+    82 0000001A 7408                    je strlend_loop_end
+    83 0000001C 41380A                  cmp BYTE [r10], cl
+    84 0000001F 7403                    je strlend_loop_end
+    85 00000021 49FFC2                  inc r10
+    86 00000024 EBEE                    jmp strlend_loop
+    87                                 strlend_loop_end:
+    88 00000026 4C89D0                  mov rax, r10
+    89 00000029 4829F0                  sub rax, rsi
+    90                                 strlend_finish:
+    91 0000002C 4883FF00                cmp rdi, 0
+    92 00000030 7401                    jz strlend_end
+    93 00000032 4C8917                  mov QWORD [rdi], r10
+    94                                 strlend_end:
+    95 00000035 C3                     ret
+    96                                 %line 3+1 ../../textbook/ch13/fdump.asm
+    97                                 
+    98                                 
+    99                                 [section .rodata]
+   100 00000000 6664756D702E646174-     File db "fdump.data-out", 0
+   101 00000000 612D6F757400       
+   102 0000000F 48656C6C6F20776F72-     Data db "Hello world, how are you", 0
+   103 0000000F 6C642C20686F772061-
+   104 0000000F 726520796F7500     
+   105                                 
+   106                                 [section .text]
+   107                                 [global fdump]
+   108                                 fdump:
+   109                                 
+   110                                 
+   111                                 
+   112                                 
+   113                                 
+   114                                 
+   115                                 
+   116                                 
+   117                                 
+   118                                 
+   119                                 
+   120                                 
+   121                                 %line 29+1 ../../textbook/ch13/fdump.asm
+   122 00000036 55                      push rbp
+   123 00000037 4889E5                  mov rbp, rsp
+   124 0000003A 4883EC28                sub rsp, 40
+   125                                 
+   126                                 
+   127 0000003E 48897DF8                mov QWORD [rbp-8], rdi
+   128 00000042 488975F0                mov QWORD [rbp-16], rsi
+   129 00000046 488955E8                mov QWORD [rbp-24], rdx
+   130 0000004A 48C745E0FFFFFFFF        mov QWORD [rbp-32], -1
+   131 00000052 48C745D800000000        mov QWORD [rbp-40], 0
+   132                                 
+   133                                 
+   134 0000005A 4883FE00                cmp rsi, 0
+   135 0000005E 7473                    je fdump_err_null_buf_ptr
+   136 00000060 4883FF00                cmp rdi, 0
+   137 00000064 7476                    je fdump_err_null_file_path
+   138                                 
+   139                                 
+   140 00000066 48C7C200000000          mov rdx, 0
+   141 0000006D 4881CA80000000          or rdx, S_IWUSR
+   142 00000074 4881CA00010000          or rdx, S_IRUSR
+   143 0000007B 4883CA20                or rdx, S_IRGRP
+   144 0000007F 48C7C600000000          mov rsi, 0
+   145 00000086 4883CE40                or rsi, O_CREAT
+   146 0000008A 4883CE01                or rsi, O_WRONLY
+   147                                 
+   148 0000008E 48C7C002000000          mov rax, SYS_open
+   149 00000095 0F05                    syscall
+   150 00000097 4883F800                cmp rax, 0
+   151 0000009B 7C5A                    jl fdump_err_open
+   152 0000009D 488945E0                mov QWORD [rbp-32], rax
+   153                                 
+   154                                 
+   155 000000A1 488B55E8                mov rdx, QWORD [rbp-24]
+   156 000000A5 488B75F0                mov rsi, QWORD [rbp-16]
+   157 000000A9 488B7DE0                mov rdi, QWORD [rbp-32]
+   158 000000AD 48C7C001000000          mov rax, SYS_write
+   159 000000B4 0F05                    syscall
+   160 000000B6 4883F800                cmp rax, 0
+   161 000000BA 7C29                    jl fdump_err_write
+   162 000000BC 488945D8                mov QWORD [rbp-40], rax
+   163                                 
+   164                                 
+   165 000000C0 488B7DE0                mov rdi, QWORD [rbp-32]
+   166 000000C4 48C7C003000000          mov rax, SYS_close
+   167 000000CB 0F05                    syscall
+   168 000000CD 4883F800                cmp rax, 0
+   169 000000D1 7C1B                    jl fdump_err_close
+   170                                 
+   171 000000D3 EB2B                    jmp fdump_finish
+   172                                 fdump_err_null_buf_ptr:
+   173 000000D5 48C7C0FBFFFFFF          mov rax, -5
+   174 000000DC EB26                    jmp fdump_end
+   175                                 fdump_err_null_file_path:
+   176 000000DE 48C7C0FCFFFFFF          mov rax, -4
+   177 000000E5 EB1D                    jmp fdump_end
+   178                                 fdump_err_write:
+   179 000000E7 48C7C0FDFFFFFF          mov rax, -3
+   180 000000EE EB14                    jmp fdump_end
+   181                                 fdump_err_close:
+   182 000000F0 48C7C0FEFFFFFF          mov rax, -2
+   183 000000F7 EB0B                    jmp fdump_end
+   184                                 fdump_err_open:
+   185 000000F9 48C7C0FFFFFFFF          mov rax, -1
+   186 00000100 EB02                    jmp fdump_end
+   187                                 fdump_finish:
+   188 00000102 488B45D8                mov rax, QWORD [rbp-40]
+   189                                 fdump_end:
+   190 00000106 4889EC                  mov rsp, rbp
+   191 00000109 5D                      pop rbp
+   192 0000010A C3                     ret
+   193                                 
+   194                                 [global _start]
+   195                                 _start:
+   196                                 %line 104+1 ../../textbook/ch13/fdump.asm
+   197 0000010B 55                      push rbp
+   198 0000010C 4889E5                  mov rbp, rsp
+   199 0000010F 4883EC08                sub rsp, 8
+   200                                 
+   201                                 
+   202 00000113 B100                    mov cl, 0
+   203 00000115 48C7C200100000          mov rdx, 4096
+   204 0000011C 48C7C6[00000000]        mov rsi, Data
+   205 00000123 488D7DF8                lea rdi, QWORD [rbp-8]
+   206 00000127 E8CFFEFFFF              call strlend
+   207                                 
+   208                                 
+   209 0000012C 4889C2                  mov rdx, rax
+   210 0000012F 48C7C6[00000000]        mov rsi, Data
+   211 00000136 48C7C7[00000000]        mov rdi, File
+   212 0000013D E8EFFEFFFF              call fdump
+   213                                 
+   214                                 
+   215 00000142 4889EC                  mov rsp, rbp
+   216 00000145 5D                      pop rbp
+   217                                 
+   218                                 
+   219 00000146 48C7C03C000000          mov rax, SYS_exit
+   220 0000014D 48C7C700000000          mov rdi, EXIT_success
+   221 00000154 0F05                    syscall

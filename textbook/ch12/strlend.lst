@@ -1,0 +1,103 @@
+     1                                 %line 8+1 ../../textbook/ch12/strlend.asm
+     2                                 
+     3                                 [section .data]
+     4 00000000 48656C6C6F20576F72-     Str1 db "Hello World", 0
+     5 00000000 6C6400             
+     6 0000000C 00                      Str2 db 0
+     7 0000000D 48656C6C6F2C576F72-     Str3 db "Hello,World,", 0
+     8 0000000D 6C642C00           
+     9 0000001A 4E6F206D6174636869-     Str4 db "No matching delimiter", 0
+    10 0000001A 6E672064656C696D69-
+    11 0000001A 74657200           
+    12                                 
+    13                                 [section .bss]
+    14 00000000 <gap>                   Len1 resq 1
+    15 00000008 <gap>                   Len2 resq 1
+    16 00000010 <gap>                   Len3 resq 1
+    17 00000018 <gap>                   Len4 resq 1
+    18                                 
+    19 00000020 <gap>                   ChrPt1 resq 1
+    20 00000028 <gap>                   ChrPt2 resq 1
+    21 00000030 <gap>                   ChrPt3 resq 1
+    22 00000038 <gap>                   ChrPt4 resq 1
+    23                                 
+    24                                 [section .text]
+    25                                 [global strlend]
+    26                                 [global _start]
+    27                                 
+    28                                 strlend:
+    29                                 
+    30                                 
+    31                                 
+    32                                 
+    33                                 
+    34                                 
+    35                                 
+    36                                 
+    37                                 
+    38                                 
+    39                                 
+    40                                 
+    41 00000000 48C7C000000000          mov rax, 0
+    42 00000007 4989F2                  mov r10, rsi
+    43 0000000A 4883FE00                cmp rsi, 0
+    44 0000000E 741A                    jz strlend_finish
+    45                                 
+    46 00000010 4883FA00                cmp rdx, 0
+    47 00000014 7414                    jz strlend_finish
+    48                                 
+    49                                 strlend_loop:
+    50 00000016 41803A00                cmp BYTE [r10], 0
+    51 0000001A 7408                    je strlend_loop_end
+    52 0000001C 41380A                  cmp BYTE [r10], cl
+    53 0000001F 7403                    je strlend_loop_end
+    54 00000021 49FFC2                  inc r10
+    55 00000024 EBEE                    jmp strlend_loop
+    56                                 strlend_loop_end:
+    57 00000026 4C89D0                  mov rax, r10
+    58 00000029 4829F0                  sub rax, rsi
+    59                                 strlend_finish:
+    60 0000002C 4883FF00                cmp rdi, 0
+    61 00000030 7401                    jz strlend_end
+    62 00000032 4C8917                  mov QWORD [rdi], r10
+    63                                 strlend_end:
+    64 00000035 C3                     ret
+    65                                 
+    66                                 _start:
+    67 00000036 B100                    mov cl, 0
+    68                                 %line 69+0 ../../textbook/ch12/strlend.asm
+    69 00000038 48C7C200100000          mov rdx, 4096
+    70 0000003F 48C7C6[00000000]        mov rsi, Str1
+    71 00000046 48C7C7[00000000]        mov rdi, ChrPt1
+    72 0000004D E8A9FFFFFF              call strlend
+    73                                 %line 70+1 ../../textbook/ch12/strlend.asm
+    74 00000052 48890425[00000000]      mov QWORD [Len1], rax
+    75 0000005A B100                    mov cl, 0
+    76                                 %line 71+0 ../../textbook/ch12/strlend.asm
+    77 0000005C 48C7C200100000          mov rdx, 4096
+    78 00000063 48C7C6[00000000]        mov rsi, Str2
+    79 0000006A 48C7C7[00000000]        mov rdi, ChrPt2
+    80 00000071 E885FFFFFF              call strlend
+    81                                 %line 72+1 ../../textbook/ch12/strlend.asm
+    82 00000076 48890425[00000000]      mov QWORD [Len2], rax
+    83 0000007E B12C                    mov cl, ","
+    84                                 %line 73+0 ../../textbook/ch12/strlend.asm
+    85 00000080 48C7C200100000          mov rdx, 4096
+    86 00000087 48C7C6[00000000]        mov rsi, Str3
+    87 0000008E 48C7C7[00000000]        mov rdi, ChrPt3
+    88 00000095 E861FFFFFF              call strlend
+    89                                 %line 74+1 ../../textbook/ch12/strlend.asm
+    90 0000009A 48890425[00000000]      mov QWORD [Len3], rax
+    91 000000A2 B121                    mov cl, "!"
+    92                                 %line 75+0 ../../textbook/ch12/strlend.asm
+    93 000000A4 48C7C200100000          mov rdx, 4096
+    94 000000AB 48C7C6[00000000]        mov rsi, Str4
+    95 000000B2 48C7C7[00000000]        mov rdi, ChrPt4
+    96 000000B9 E83DFFFFFF              call strlend
+    97                                 %line 76+1 ../../textbook/ch12/strlend.asm
+    98 000000BE 48890425[00000000]      mov QWORD [Len4], rax
+    99                                 
+   100                                 
+   101 000000C6 48C7C03C000000          mov rax, 60
+   102 000000CD 48C7C700000000          mov rdi, 0
+   103 000000D4 0F05                    syscall
