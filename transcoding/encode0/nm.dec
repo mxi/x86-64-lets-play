@@ -1,0 +1,289 @@
+
+nm:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000401000 <_start>:
+  401000:	push   rbp
+  401001:	mov    rbp,rsp
+  401004:	push   rbx
+  401005:	push   r12
+  401007:	push   r13
+  401009:	push   r14
+  40100b:	push   r15
+  40100d:	mov    r12,QWORD PTR [rbp+0x8]
+  401011:	cmp    r12,0x3
+  401015:	jl     401223 <_start_err_few_args>
+  40101b:	jg     40123f <_start_err_lot_args>
+  401021:	mov    rdx,0x0
+  401028:	mov    rsi,0x0
+  40102f:	or     rsi,0x0
+  401033:	mov    rdi,QWORD PTR [rbp+0x18]
+  401037:	mov    rax,0x2
+  40103e:	syscall 
+  401040:	cmp    rax,0x0
+  401044:	jl     401207 <_start_err_src_open>
+  40104a:	mov    QWORD PTR ds:0x4030c8,rax
+  401051:
+  401052:	mov    rdx,0x0
+  401059:	or     rdx,0x100
+  401060:	or     rdx,0x80
+  401067:	or     rdx,0x20
+  40106b:	or     rdx,0x4
+  40106f:	mov    rsi,0x0
+  401076:	or     rsi,0x40
+  40107a:	or     rsi,0x1
+  40107e:	mov    rdi,QWORD PTR [rbp+0x20]
+  401082:	mov    rax,0x2
+  401089:	syscall 
+  40108b:	cmp    rax,0x0
+  40108f:	jl     4011eb <_start_err_dst_open>
+  401095:	mov    QWORD PTR ds:0x403160,rax
+  40109c:
+  40109d:	mov    rbx,0x1
+  4010a4:	mov    r10,0x4030d0
+  4010ab:	mov    QWORD PTR ds:0x4030b8,r10
+  4010b2:
+  4010b3:	mov    r12,r10
+  4010b6:	mov    QWORD PTR ds:0x4030c0,r10
+  4010bd:
+  4010be:	mov    r13,r10
+  4010c1:	mov    r10,0x403168
+  4010c8:	mov    QWORD PTR ds:0x403150,r10
+  4010cf:
+  4010d0:	add    r10,0x80
+  4010d7:	mov    QWORD PTR ds:0x403158,r10
+  4010de:
+  4010df:	jmp    401132 <_start_flush>
+
+00000000004010e1 <_start_read_loop>:
+  4010e1:	call   40129b <readbuf>
+  4010e6:	cmp    rax,0x0
+  4010ea:	jl     401181 <_start_err_read>
+  4010f0:	mov    r12,QWORD PTR ds:0x4030b8
+  4010f7:
+  4010f8:	mov    r13,QWORD PTR ds:0x4030c0
+  4010ff:
+  401100:	cmp    r12,r13
+  401103:	je     401174 <_start_read_loop_end>
+
+0000000000401105 <_start_transfer_loop>:
+  401105:	cmp    r14,r15
+  401108:	je     401132 <_start_flush>
+  40110a:	cmp    r12,r13
+  40110d:	je     4010e1 <_start_read_loop>
+  40110f:	mov    r10b,BYTE PTR [r12]
+  401113:	mov    BYTE PTR [r14],r10b
+  401116:	inc    r12
+  401119:	inc    r14
+  40111c:	mov    QWORD PTR ds:0x4030b8,r12
+  401123:
+  401124:	mov    QWORD PTR ds:0x403150,r14
+  40112b:
+  40112c:	cmp    r10b,0xa
+  401130:	jne    401105 <_start_transfer_loop>
+
+0000000000401132 <_start_flush>:
+  401132:	call   4012db <writebuf>
+  401137:	cmp    rax,0x0
+  40113b:	jl     4011a2 <_start_err_write>
+  40113d:	mov    rdx,rbx
+  401140:	inc    rbx
+  401143:	mov    rsi,QWORD PTR ds:0x403158
+  40114a:
+  40114b:	sub    rsi,QWORD PTR ds:0x403150
+  401152:
+  401153:	dec    rsi
+  401156:	mov    rdi,QWORD PTR ds:0x403150
+  40115d:
+  40115e:	call   401318 <itos>
+  401163:	mov    BYTE PTR [rax],0x20
+  401166:	lea    r14,[rax+0x1]
+  40116a:	mov    r15,QWORD PTR ds:0x403158
+  401171:
+  401172:	jmp    401105 <_start_transfer_loop>
+
+0000000000401174 <_start_read_loop_end>:
+  401174:	call   4012db <writebuf>
+  401179:	cmp    rax,0x0
+  40117d:	jl     4011a2 <_start_err_write>
+  40117f:	jmp    4011c1 <_start_err_io_done>
+
+0000000000401181 <_start_err_read>:
+  401181:	mov    rsi,0x40207e
+  401188:	mov    rdi,0x2
+  40118f:	call   401271 <print>
+  401194:	mov    QWORD PTR ds:0x4030b0,0x21
+  40119b:
+  4011a0:	jmp    4011c1 <_start_err_io_done>
+
+00000000004011a2 <_start_err_write>:
+  4011a2:	mov    rsi,0x402096
+  4011a9:	mov    rdi,0x2
+  4011b0:	call   401271 <print>
+  4011b5:	mov    QWORD PTR ds:0x4030b0,0x20
+  4011bc:
+
+00000000004011c1 <_start_err_io_done>:
+  4011c1:	mov    rdi,0x4030c8
+  4011c8:	mov    rax,0x3
+  4011cf:	syscall 
+  4011d1:	mov    rdi,0x403160
+  4011d8:	mov    rax,0x3
+  4011df:	syscall 
+  4011e1:	mov    rdi,QWORD PTR ds:0x4030b0
+  4011e8:
+  4011e9:	jmp    40125b <_start_end>
+
+00000000004011eb <_start_err_dst_open>:
+  4011eb:	mov    rsi,0x402065
+  4011f2:	mov    rdi,0x2
+  4011f9:	call   401271 <print>
+  4011fe:	mov    rdi,0x4
+  401205:	jmp    40125b <_start_end>
+
+0000000000401207 <_start_err_src_open>:
+  401207:	mov    rsi,0x40204d
+  40120e:	mov    rdi,0x2
+  401215:	call   401271 <print>
+  40121a:	mov    rdi,0x3
+  401221:	jmp    40125b <_start_end>
+
+0000000000401223 <_start_err_few_args>:
+  401223:	mov    rsi,0x402000
+  40122a:	mov    rdi,0x2
+  401231:	call   401271 <print>
+  401236:	mov    rdi,0x2
+  40123d:	jmp    40125b <_start_end>
+
+000000000040123f <_start_err_lot_args>:
+  40123f:	mov    rsi,0x402026
+  401246:	mov    rdi,0x2
+  40124d:	call   401271 <print>
+  401252:	mov    rdi,0x1
+  401259:	jmp    40125b <_start_end>
+
+000000000040125b <_start_end>:
+  40125b:	pop    r15
+  40125d:	pop    r14
+  40125f:	pop    r13
+  401261:	pop    r12
+  401263:	pop    rbx
+  401264:	mov    rsp,rbp
+  401267:	pop    rbp
+  401268:	mov    rax,0x3c
+  40126f:	syscall 
+
+0000000000401271 <print>:
+  401271:	cmp    rdi,0x0
+  401275:	je     40129a <print_end>
+  401277:	cmp    rsi,0x0
+  40127b:	je     40129a <print_end>
+  40127d:	mov    r10,rsi
+
+0000000000401280 <print_strlen_loop>:
+  401280:	cmp    BYTE PTR [r10],0x0
+  401284:	je     40128b <print_strlen_loop_end>
+  401286:	inc    r10
+  401289:	jmp    401280 <print_strlen_loop>
+
+000000000040128b <print_strlen_loop_end>:
+  40128b:	mov    rdx,r10
+  40128e:	sub    rdx,rsi
+  401291:	mov    rax,0x1
+  401298:	syscall 
+
+000000000040129a <print_end>:
+  40129a:	ret    
+
+000000000040129b <readbuf>:
+  40129b:	mov    rdx,0x80
+  4012a2:	mov    rsi,0x4030d0
+  4012a9:	mov    rdi,QWORD PTR ds:0x4030c8
+  4012b0:
+  4012b1:	mov    rax,0x0
+  4012b8:	syscall 
+  4012ba:	cmp    rax,0x0
+  4012be:	jl     4012da <readbuf_end>
+  4012c0:	mov    r10,0x4030d0
+  4012c7:	mov    QWORD PTR ds:0x4030b8,r10
+  4012ce:
+  4012cf:	add    r10,rax
+  4012d2:	mov    QWORD PTR ds:0x4030c0,r10
+  4012d9:
+
+00000000004012da <readbuf_end>:
+  4012da:	ret    
+
+00000000004012db <writebuf>:
+  4012db:	mov    rdx,QWORD PTR ds:0x403150
+  4012e2:
+  4012e3:	sub    rdx,0x403168
+  4012ea:	mov    rsi,0x403168
+  4012f1:	mov    rdi,QWORD PTR ds:0x403160
+  4012f8:
+  4012f9:	mov    rax,0x1
+  401300:	syscall 
+  401302:	cmp    rax,0x0
+  401306:	jl     401317 <writebuf_end>
+  401308:	mov    r10,0x403168
+  40130f:	mov    QWORD PTR ds:0x403150,r10
+  401316:
+
+0000000000401317 <writebuf_end>:
+  401317:	ret    
+
+0000000000401318 <itos>:
+  401318:	push   rbx
+  401319:	push   r12
+  40131b:	push   r13
+  40131d:	mov    rax,rdi
+  401320:	cmp    rdi,0x0
+  401324:	je     401395 <itos_end>
+  401326:	cmp    rsi,0x0
+  40132a:	je     401395 <itos_end>
+  40132c:	mov    rax,rdx
+  40132f:	mov    rbx,0xa
+  401336:	mov    r12,0x0
+  40133d:	mov    r13,0x0
+  401344:	cmp    rax,0x0
+  401348:	jge    401357 <itos_digit_push_loop>
+  40134a:	mov    r12,0x1
+  401351:	inc    r13
+  401354:	neg    rax
+
+0000000000401357 <itos_digit_push_loop>:
+  401357:	cmp    r13,rsi
+  40135a:	je     401372 <itos_digit_push_loop_end>
+  40135c:	xor    rdx,rdx
+  40135f:	div    rbx
+  401362:	add    rdx,0x30
+  401366:	push   rdx
+  401367:	inc    r13
+  40136a:	cmp    rax,0x0
+  40136e:	je     401372 <itos_digit_push_loop_end>
+  401370:	jmp    401357 <itos_digit_push_loop>
+
+0000000000401372 <itos_digit_push_loop_end>:
+  401372:	cmp    r12,0x1
+  401376:	jne    401382 <itos_digit_pop_loop>
+  401378:	mov    rbx,0x0
+  40137f:	mov    bl,0x2d
+  401381:	push   rbx
+
+0000000000401382 <itos_digit_pop_loop>:
+  401382:	cmp    r13,0x0
+  401386:	je     401395 <itos_end>
+  401388:	pop    r12
+  40138a:	mov    BYTE PTR [rdi],r12b
+  40138d:	inc    rdi
+  401390:	dec    r13
+  401393:	jmp    401382 <itos_digit_pop_loop>
+
+0000000000401395 <itos_end>:
+  401395:	mov    rax,rdi
+  401398:	pop    r13
+  40139a:	pop    r12
+  40139c:	pop    rbx
+  40139d:	ret    

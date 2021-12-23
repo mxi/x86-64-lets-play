@@ -1,0 +1,153 @@
+
+freadline:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000401000 <printline>:
+  401000:	cmp    rdi,0x0
+  401004:	je     40104a <printline_end>
+  401006:	mov    rsi,rdi
+
+0000000000401009 <printline_strlen_loop>:
+  401009:	cmp    BYTE PTR [rsi],0x0
+  40100c:	je     401013 <printline_strlen_loop_end>
+  40100e:	inc    rsi
+  401011:	jmp    401009 <printline_strlen_loop>
+
+0000000000401013 <printline_strlen_loop_end>:
+  401013:	mov    rdx,rsi
+  401016:	sub    rdx,rdi
+  401019:	mov    rsi,rdi
+  40101c:	mov    rdi,0x1
+  401023:	mov    rax,0x1
+  40102a:	syscall 
+  40102c:	mov    rdx,0x1
+  401033:	mov    rsi,0x402000
+  40103a:	mov    rdi,0x1
+  401041:	mov    rax,0x1
+  401048:	syscall 
+
+000000000040104a <printline_end>:
+  40104a:	ret    
+
+000000000040104b <freadline>:
+  40104b:	push   rbp
+  40104c:	mov    rbp,rsp
+  40104f:	sub    rsp,0x100
+  401056:	push   rbx
+  401057:	push   r12
+  401059:	push   r13
+  40105b:	push   r14
+  40105d:	mov    r13,rdx
+  401060:	mov    r14,0x0
+  401067:	mov    rbx,rdi
+  40106a:	mov    r10,rdi
+  40106d:	mov    r11,rsi
+  401070:	dec    r11
+  401073:	mov    rdx,0x1
+  40107a:	mov    rsi,0x0
+  401081:	mov    rdi,r13
+  401084:	mov    rax,0x8
+  40108b:	syscall 
+  40108d:	cmp    rax,0x0
+  401091:	jl     401121 <freadline_err>
+  401097:	mov    r14,rax
+
+000000000040109a <freadline_readbuf_loop>:
+  40109a:	lea    r12,[rbp-0x100]
+  4010a1:	mov    rdx,0x100
+  4010a8:	mov    rsi,r12
+  4010ab:	mov    rdi,r13
+  4010ae:	mov    rax,0x0
+  4010b5:	push   r11
+  4010b7:	push   r10
+  4010b9:	syscall 
+  4010bb:	pop    r10
+  4010bd:	pop    r11
+  4010bf:	cmp    rax,0x0
+  4010c3:	jl     401121 <freadline_err>
+  4010c5:	je     4010f5 <freadline_readbuf_loop_end>
+
+00000000004010c7 <freadline_strcpy_loop>:
+  4010c7:	cmp    r11,0x0
+  4010cb:	je     4010f5 <freadline_readbuf_loop_end>
+  4010cd:	cmp    r12,rbp
+  4010d0:	je     40109a <freadline_readbuf_loop>
+  4010d2:	cmp    rax,0x0
+  4010d6:	je     40109a <freadline_readbuf_loop>
+  4010d8:	inc    r14
+  4010db:	mov    dl,BYTE PTR [r12]
+  4010df:	cmp    dl,0xa
+  4010e2:	je     4010f5 <freadline_readbuf_loop_end>
+  4010e4:	mov    BYTE PTR [r10],dl
+  4010e7:	dec    rax
+  4010ea:	inc    r10
+  4010ed:	dec    r11
+  4010f0:	inc    r12
+  4010f3:	jmp    4010c7 <freadline_strcpy_loop>
+
+00000000004010f5 <freadline_readbuf_loop_end>:
+  4010f5:	push   r10
+  4010f7:	mov    rdx,0x0
+  4010fe:	mov    rsi,r14
+  401101:	mov    rdi,r13
+  401104:	mov    rax,0x8
+  40110b:	syscall 
+  40110d:	cmp    rax,0x0
+  401111:	jl     401121 <freadline_err>
+  401113:	pop    r10
+  401115:	mov    BYTE PTR [r10],0x0
+  401119:	mov    rax,r10
+  40111c:	sub    rax,rbx
+  40111f:	jmp    401128 <freadline_end>
+
+0000000000401121 <freadline_err>:
+  401121:	mov    rax,0xffffffffffffffff
+
+0000000000401128 <freadline_end>:
+  401128:	pop    r14
+  40112a:	pop    r13
+  40112c:	pop    r12
+  40112e:	pop    rbx
+  40112f:	mov    rsp,rbp
+  401132:	pop    rbp
+  401133:	ret    
+
+0000000000401134 <_start>:
+  401134:	mov    rdx,0x0
+  40113b:	mov    rsi,0x0
+  401142:	or     rsi,0x0
+  401146:	mov    rdi,0x402001
+  40114d:	mov    rax,0x2
+  401154:	syscall 
+  401156:	cmp    rax,0x0
+  40115a:	jl     4011a4 <_start_err>
+  40115c:	mov    r12,rax
+
+000000000040115f <_start_read_loop>:
+  40115f:	mov    rdx,r12
+  401162:	mov    rsi,0x80
+  401169:	mov    rdi,0x40300c
+  401170:	call   40104b <freadline>
+  401175:	cmp    rax,0x0
+  401179:	jle    401189 <_start_read_loop_end>
+  40117b:	mov    rdi,0x40300c
+  401182:	call   401000 <printline>
+  401187:	jmp    40115f <_start_read_loop>
+
+0000000000401189 <_start_read_loop_end>:
+  401189:	mov    rdi,r12
+  40118c:	mov    rax,0x3
+  401193:	syscall 
+  401195:	cmp    rax,0x0
+  401199:	jl     4011a4 <_start_err>
+  40119b:	mov    rdi,0x0
+  4011a2:	jmp    4011ab <_start_end>
+
+00000000004011a4 <_start_err>:
+  4011a4:	mov    rdi,0x1
+
+00000000004011ab <_start_end>:
+  4011ab:	mov    rax,0x3c
+  4011b2:	syscall 
