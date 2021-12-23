@@ -1,0 +1,134 @@
+<start>
+0x401000:
+	push rbp
+	opcode: 0x50 + 0b101
+	> 0x55
+
+0x401001:
+	mov rbp, rsp
+	prefix: REX.W000 (0x48)
+	opcode: 0x8B
+	ModR/M: Mod = 0b11, reg = 0b100, 0b101
+	> 0x488BE5
+
+0x401004;
+	push rbx
+	opcode: 0x50 + 0b011
+	> 0x53
+
+0x401005:
+	push r12
+	prefix: REX.W00B (0x49)
+	opcode: 0x50 + 0b100
+	> 0x4954
+
+0x401007:
+	push r13
+	prefix: REX.W00B (0x49)
+	opcode: 0x50 + 0b101
+	> 0x4955
+
+0x401009:
+	push r14
+	prefix: REX.W00B (0x49)
+	opcode: 0x50 + 0b110
+	> 0x4956
+
+0x40100b:
+	push r15
+	prefix: REX.W00B (0x49)
+	opcode: 0x50 + 0b111
+	> 0x4957
+
+0x40100d:
+	mov r12, QWORD [rbp+8]
+	prefix: REX.WR00 [(0x4C)]
+	opcode: 0x8B
+	ModR/M: Mod = 0b01, reg = 0b(1)100, r/m = 0b101
+	disp8: 0x08
+	> [0x4C8B6508]
+
+0x401011:
+	cmp r12, 3
+	prefix: REX.W000B (0x48)
+	opcode: 0x83
+	ModR/M: Mod = 0b00, reg = 0b111, r/m = 0b(1)100
+	imm8: 0x03
+	> 0x48833B03
+
+0x401015:
+	jl 0x401223
+	opcode: 0x0F8C
+	imm32: 0x208
+	> 0x0F8C08020000
+
+0x401015:
+	jg 0x40123F
+	opcode: 0x0F8F
+	imm32: 0x23020000
+	> 0x0F8F23020000
+
+0x401021:
+	mov rdx, 0
+	prefix: REX.W000 (0x48)
+	opcode: 0xC7
+	ModR/M: Mod = 0b11, reg = 0b000, r/m = 0b010
+	imm32: 0x00000000
+	> 0x48C7C200000000
+
+0x401028:
+	mov rsi, 0
+	prefix: REX.W000 (0x48)
+	opcode: 0xC7
+	ModR/M: Mod = 0b11, reg = 0b000, r/m = 0b100
+	imm32: 0x00000000
+	> 0x48C7C400000000
+
+0x40102f:
+	or rsi, 0
+	prefix: REX.W000 (0x48)
+	opcode: 0x83
+	ModR/M: Mod = 0b11, reg = 0b001, r/m = 0b100
+	imm8: 0x00
+	> 0x4883CC00
+
+0x401033:
+	mov rdi, QWORD [rbp+18]
+	prefix: REX.W000 (0x48)
+	opcode: 0x8B
+	ModR/M: Mod = 0b01, reg = 0b111, r/m = 0b101
+	disp8: 0x12
+	> 0x488B7D12
+
+0x401037:
+	mov rax, 2
+	prefix: REX.W000 (0x48)
+	opcode: 0xC7
+	ModR/M: Mod = 0b11, reg = 0b000, r/m = 0b000
+	imm32: 0x02000000
+	> 0x48C7C002000000
+
+0x40103e:
+	syscall
+	opcode: 0x0F05
+	> 0x0F05
+
+HEX
+<start>
+	0x55
+ident	0x48 8B E5 -- 0x48 89 e5
+	0x53
+ident	0x49 54 -- 0x41 54
+ident	0x49 55 -- 0x41 55
+ident	0x49 56 -- 0x41 56
+ident	0x49 57 -- 0x41 57
+WRONG	0x48 8B 75 08 -- 0x4c 8b 65 08
+	0x48 83 3B 03 -- 0x49 83 fc 03
+	0x0F 8C 08 02 00 00
+	0x0F 8F 23 02 00 00 -- 0x0f 8f 1e 02 00 00
+	0x48 C7 C2 00 00 00 00
+	0x48 C7 C4 00 00 00 00 -- 0x48 c7 c6 00 00 00 00
+	0x48 83 CC 00 -- 0x48 83 ce 00
+	0x48 8B 7D 12 -- 0x48 8b 7d 18
+	0x48 C7 C0 02 00 00 00
+	0x0F 05
