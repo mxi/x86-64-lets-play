@@ -175,12 +175,19 @@ an index register unlike $esp and $rsp, i.e., something like
 If $r13 is to address memory, the same restrictions apply as to $ebp
 and $rbp, that is, the 8-bit displacement of 0 form must be used.
 
-In 64-bit mode, although rarely, an immediate may use 8 bytes, for 
+In 64-bit mode, although rarely, an immediate may use 8 bytes. For 
 example:
 
 	HEX			ASSEMBLY
 	---------------------------------------------------
 	48B8B1A1F0E0D0C0B0A0	mov rax, 0xA0B0C0D0E0F0A1B1
+
+In the same manner, a 64-bit immediate address may be dereferenced. For
+example:
+
+	HEX			ASSEMBLY
+	-----------------------------------------------------------
+	48A18877665544332211	mov rax, [QWORD 0x1122334455667788]
 
 
 RIP Relative Addressing
