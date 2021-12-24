@@ -77,7 +77,7 @@ itosfr_digit_overflow:
 	mov r9, rcx
 	sub r9, rsi
 	inc r9
-	lea rsp, QWORD PTR [rsp+r9*8]
+	lea rsp, QWORD [rsp+r9*8]
 	mov rcx, rsi
 	dec rcx
 	jmp itosfr_pop_loop
